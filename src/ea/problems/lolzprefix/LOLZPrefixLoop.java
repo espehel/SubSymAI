@@ -1,6 +1,6 @@
-package evolutionairyalgorithm.problems.lolzprefix;
+package ea.problems.lolzprefix;
 
-import evolutionairyalgorithm.core.*;
+import ea.core.*;
 
 import java.util.ArrayList;
 import java.util.Random;

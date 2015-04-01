@@ -1,4 +1,4 @@
-package evolutionairyalgorithm.core;
+package ea.core;
 
 import java.util.Arrays;
 

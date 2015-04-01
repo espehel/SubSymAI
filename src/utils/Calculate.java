@@ -1,6 +1,6 @@
 package utils;
 
-import evolutionairyalgorithm.core.Phenotype;
+import ea.core.Phenotype;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package evolutionairyalgorithm.gui;
+package ea.gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

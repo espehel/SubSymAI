@@ -1,4 +1,4 @@
-package evolutionairyalgorithm.core;
+package ea.core;
 
 /**
  * Created by espen on 03/03/15.

@@ -1,8 +1,8 @@
-package evolutionairyalgorithm.problems.SuprisingSequence;
+package ea.problems.SuprisingSequence;
 
-import evolutionairyalgorithm.core.Genotype;
-import evolutionairyalgorithm.core.Phenotype;
-import evolutionairyalgorithm.core.Settings;
+import ea.core.Genotype;
+import ea.core.Phenotype;
+import ea.core.Settings;
 
 import java.util.ArrayList;
 import java.util.HashMap;

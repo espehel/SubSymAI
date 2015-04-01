@@ -1,9 +1,9 @@
-package evolutionairyalgorithm.gui;
+package ea.gui;
 
-import evolutionairyalgorithm.problems.SuprisingSequence.SuprisingSequenceLoop;
-import evolutionairyalgorithm.core.EvolutionaryLoop;
-import evolutionairyalgorithm.core.Settings;
-import evolutionairyalgorithm.core.State;
+import ea.problems.SuprisingSequence.SuprisingSequenceLoop;
+import ea.core.EvolutionaryLoop;
+import ea.core.Settings;
+import ea.core.State;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,8 +16,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import evolutionairyalgorithm.problems.lolzprefix.LOLZPrefixLoop;
-import evolutionairyalgorithm.problems.onemax.OneMaxLoop;
+import ea.problems.lolzprefix.LOLZPrefixLoop;
+import ea.problems.onemax.OneMaxLoop;
 
 
 

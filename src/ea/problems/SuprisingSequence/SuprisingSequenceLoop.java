@@ -1,6 +1,6 @@
-package evolutionairyalgorithm.problems.SuprisingSequence;
+package ea.problems.SuprisingSequence;
 
-import evolutionairyalgorithm.core.*;
+import ea.core.*;
 
 import java.util.ArrayList;
 import java.util.Random;

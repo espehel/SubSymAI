@@ -1,7 +1,7 @@
-package evolutionairyalgorithm.problems.lolzprefix;
+package ea.problems.onemax;
 
-import evolutionairyalgorithm.core.Phenotype;
-import evolutionairyalgorithm.core.Settings;
+import ea.core.Phenotype;
+import ea.core.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by espen on 09/03/15.
  */
-public class LOLZPrefixPhenotype extends Phenotype {
+public class OneMaxPhenotype extends Phenotype {
 
     public List<Integer> data;
 
@@ -20,7 +20,6 @@ public class LOLZPrefixPhenotype extends Phenotype {
             data.add(bool ? 1 : 0);
         }
     }
-
     @Override
     protected String getDataString() {
         return data.toString();
@@ -29,16 +28,9 @@ public class LOLZPrefixPhenotype extends Phenotype {
     @Override
     public double calculateFitness() {
         int f = 0;
-        int l = data.get(0);
         for (Integer n : data){
-            if(n.intValue() == l)
-                f+=n;
-            else
-                break;
+            f+=n;
         }
-        f = f>(int) Settings.Z_VALUE && l==0 ? (int)Settings.Z_VALUE : f;
-
         return f / (double) Settings.GENOTYPE_SIZE;
     }
-
 }

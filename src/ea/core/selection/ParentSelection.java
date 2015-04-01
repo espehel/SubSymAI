@@ -1,8 +1,8 @@
-package evolutionairyalgorithm.core.selection;
+package ea.core.selection;
 
-import evolutionairyalgorithm.core.MatingPartners;
-import evolutionairyalgorithm.core.Settings;
-import evolutionairyalgorithm.core.Phenotype;
+import ea.core.MatingPartners;
+import ea.core.Settings;
+import ea.core.Phenotype;
 import utils.Calculate;
 
 import java.util.ArrayList;

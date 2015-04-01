@@ -1,8 +1,8 @@
-package evolutionairyalgorithm.core;
+package ea.core;
 
-import evolutionairyalgorithm.core.selection.AdultSelection;
-import evolutionairyalgorithm.core.selection.ParentSelection;
-import evolutionairyalgorithm.gui.Controller;
+import ea.core.selection.AdultSelection;
+import ea.core.selection.ParentSelection;
+import ea.gui.Controller;
 import utils.Calculate;
 import utils.Constants;
 import java.util.ArrayList;

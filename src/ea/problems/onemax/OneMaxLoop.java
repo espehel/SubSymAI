@@ -1,6 +1,6 @@
-package evolutionairyalgorithm.problems.onemax;
+package ea.problems.onemax;
 
-import evolutionairyalgorithm.core.*;
+import ea.core.*;
 
 import java.util.ArrayList;
 import java.util.Random;
