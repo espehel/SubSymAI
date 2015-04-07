@@ -35,27 +35,8 @@ public class SuprisingSequencePhenotype extends Phenotype {
         return n;
     }
 
-    public static void main(String[] args) {
-        SuprisingSequencePhenotype phenotype = new SuprisingSequencePhenotype();
-        Settings.Z_VALUE = 12;
-        Settings.REPRESENTATION_SIZE = (int)Math.ceil(Math.log(Settings.Z_VALUE) / Math.log(2));
-        phenotype.genotype = new Genotype(new boolean[]{false,false,false,false,
-                                                        false,false,false,true,
-                                                        true,false,false,false,
-                                                        true,true,true,true,
-                                                        true,false,true,true,
-                                                        true,true,true,true,
-                                                        true,true,true,true,
-                                                        true,true,true,true,
-                                                        true,true,true,true,
-        });
-
-        Settings.GENOTYPE_SIZE = phenotype.genotype.geno.length;
-        phenotype.develop();
-        System.out.println();
-    }
     @Override
-    public double calculateFitness() {
+    public void calculateFitness() {
         Map<String,Integer> occurences = new HashMap<>();
         double f = 0;
         for (int i = 0; i < data.size(); i++) {
@@ -79,7 +60,7 @@ public class SuprisingSequencePhenotype extends Phenotype {
         }
 
 
-        return (double)occurences.size() / (double)totalOccurences;
+        fitness = (double)occurences.size() / (double)totalOccurences;
     }
     @Override
     protected String getDataString() {

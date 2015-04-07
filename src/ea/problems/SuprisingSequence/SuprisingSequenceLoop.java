@@ -12,10 +12,10 @@ public class SuprisingSequenceLoop extends EvolutionaryLoop {
         return new SuprisingSequencePhenotype();
     }
 
-    @Override
+    /*@Override
     protected double calculateFitness(Phenotype pheno) {
         return pheno.calculateFitness();
-    }
+    }*/
 
     @Override
     protected boolean goalAccomplished() {
@@ -41,19 +41,7 @@ public class SuprisingSequenceLoop extends EvolutionaryLoop {
             //BitSet bitSet = new BitSet();
             for (int j = 0; j < data.length; j++) {
                 data[j] = rnd.nextBoolean();
-                //bitSet.set(j,data[j]);
             }
-            /*for (int j = 0; j < data.length; j++) {
-                System.out.print(data[j]+", ");
-            }
-            System.out.println();
-            for (int j = 0; j < bitSet.size(); j++) {
-                System.out.print(bitSet.get(j)+", ");
-            }
-            System.out.println();
-            System.out.println(bitSet);*/
-
-
             Phenotype pheno = new SuprisingSequencePhenotype();
             pheno.genotype = new Genotype(data);
             pheno.develop();

@@ -1,10 +1,15 @@
-package ea.gui;
+package ann.gui;
 
+import ann.problems.ProblemSimulator;
 import ann.problems.flatland.Agent;
-import ea.problems.SuprisingSequence.SuprisingSequenceLoop;
+import ann.problems.flatland.FlatlandLoop;
+import ann.problems.flatland.FlatlandSimulator;
 import ea.core.EvolutionaryLoop;
 import ea.core.Settings;
 import ea.core.State;
+import ea.problems.SuprisingSequence.SuprisingSequenceLoop;
+import ea.problems.lolzprefix.LOLZPrefixLoop;
+import ea.problems.onemax.OneMaxLoop;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,18 +17,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import ea.problems.lolzprefix.LOLZPrefixLoop;
-import ea.problems.onemax.OneMaxLoop;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Paint;
+import utils.Constants;
 import utils.GUIController;
 
+import java.io.File;
 
-public class Controller implements GUIController{
+
+public class Controller implements GUIController {
 
 
     @FXML
@@ -31,6 +40,8 @@ public class Controller implements GUIController{
     LineChart.Series<Double, Double> bestSeries;
     LineChart.Series<Double, Double> averageSeries;
     LineChart.Series<Double, Double> sdSeries;
+    @FXML
+    private GridPane gridContainer;
     @FXML
     private ToggleGroup parentSelectToggler;
     @FXML
@@ -74,6 +85,12 @@ public class Controller implements GUIController{
     @FXML
     private TextField kValue;
 
+    private boolean flatlandView = false;
+    ImageView[][] imageViews;
+    ProblemSimulator sim;
+    int[] lastPos = new int[]{-1,-1};
+
+
     @FXML
     protected void initialize() {
         ObservableList<XYChart.Series<Double, Double>> lineChartData = FXCollections.observableArrayList();
@@ -103,6 +120,25 @@ public class Controller implements GUIController{
             }
         });
 
+        imageViews = new ImageView[10][10];
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                ImageView imageView = new ImageView();
+                imageView.setImage(new Image("resources/Pac-Man-South.png"));
+                StackPane pane = new StackPane();
+                pane.setPrefSize(32,32);
+                pane.getChildren().add(imageView);
+                pane.setMargin(imageView, new Insets(5));
+                pane.setStyle("-fx-border-color: black;\n"
+                        + "-fx-border-width: 1;\n"
+                        + "-fx-border-style: solid;\n");
+                StackPane.setAlignment(imageView, Pos.CENTER);
+
+                imageViews[i][j] = imageView;
+                gridContainer.add(pane,i,j);
+            }
+        }
     }
 
     @FXML
@@ -124,28 +160,22 @@ public class Controller implements GUIController{
         reset();
         saveSettings();
         String problem = problemCombo.getSelectionModel().getSelectedItem();
-        EvolutionaryLoop eaLoop;
 
         switch (problem){
-            case "One-Max" :
-                eaLoop = new OneMaxLoop();
-                break;
-            case "LOLZ-prefix":
-                eaLoop = new LOLZPrefixLoop();
-                break;
-            case "Surprising Sequence":
-                eaLoop = new SuprisingSequenceLoop();
+            case "Flatland" :
+                sim = new FlatlandSimulator();
                 break;
             default:return;
         }
-        eaLoop.initialize(this);
+        sim.initialize(this);
+        System.out.println("initialized");
         Task task = new Task<Void>(){
 
             @Override
             protected Void call()  {
                 Settings.RUNNING = true;
                 try{
-                    eaLoop.run();
+                    sim.start();
 
                 } catch (Exception e){
                     e.printStackTrace();
@@ -155,6 +185,42 @@ public class Controller implements GUIController{
         };
         new Thread(task).start();
 
+    }
+    @FXML
+    public void toggleVisual(){
+        if(flatlandView) {
+            gridContainer.setVisible(false);
+            graph.setVisible(true);
+        }
+        else{
+            if(sim == null)
+                return;
+            gridContainer.setVisible(true);
+            graph.setVisible(false);
+            Agent agent = new Agent();
+            //sim = new FlatlandSimulator();
+            updateGrid(sim.getBoardData());
+            updateGrid(agent);
+            sim.testAgent(agent);
+        }
+        flatlandView = !flatlandView;
+
+    }
+
+    private void updateGrid(int[][] boardData) {
+        for (int i = 0; i < boardData.length; i++) {
+            for (int j = 0; j < boardData[0].length; j++) {
+                Image image;
+                if(boardData[i][j] == Constants.FLATLAND_CELLTYPE_EMPTY)
+                     image = new Image("resources/Empty.png");
+                else if(boardData[i][j] == Constants.FLATLAND_CELLTYPE_POISON)
+                    image = new Image("resources/Poison.png");
+                else
+                    image = new Image("resources/Strawberry.png");
+
+                imageViews[i][j].setImage(image);
+            }
+        }
     }
 
     private void saveSettings() {
@@ -188,7 +254,14 @@ public class Controller implements GUIController{
 
     @Override
     public void updateGrid(Agent agent) {
-        throw new NotImplementedException();
+        if(lastPos[0] != -1){
+            imageViews[lastPos[0]][lastPos[1]].setImage(new Image("resources/Empty.png"));
+        }
+
+        imageViews[agent.x][agent.y].setImage(new Image("resources/Pac-Man-" + agent.front.toString()+".png"));
+        lastPos[0] = agent.x;
+        lastPos[1] = agent.y;
+
     }
 
     public void reset(){

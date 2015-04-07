@@ -46,5 +46,5 @@ public abstract class Phenotype implements Comparable<Phenotype> {
 
     protected abstract String getDataString();
 
-    public abstract double calculateFitness();
+    public abstract void calculateFitness();
 }

@@ -19,14 +19,16 @@ public class ParentSelection {
 
     public static List<MatingPartners> fitnessProportinate(List<Phenotype> population){
         List<MatingPartners> matingPool = new ArrayList<>();
-
+        //System.out.println("fitnessprop");
         while(matingPool.size()<Settings.CHILD_POOL_SIZE / 2) {
+           // System.out.println("sad");
 
             double totalFitness = Calculate.sumFitness(population);
 
             normalizePopulation(population, x -> x / totalFitness);
-
+            //System.out.println("dsf");
             MatingPartners chosenMates = chooseParent(population);
+          //  System.out.println("saasd");
             matingPool.add(chosenMates);
         }
         return matingPool;
@@ -130,14 +132,18 @@ public class ParentSelection {
                 chosenMates.partner1 = parent;
             }
         }
+      //  System.out.println(population.size());
         do{
             randomValue = Math.random();
             for (Phenotype parent : population){
                 if(parent.inRange(randomValue)){
+//                    System.out.println("inrange");
                     chosenMates.partner2 = parent;
                 }
+             //   System.out.println("sada");
             }
         }while(chosenMates.partner1 == chosenMates.partner2);
+    //    System.out.println(chosenMates);
         return chosenMates;
     }
 }

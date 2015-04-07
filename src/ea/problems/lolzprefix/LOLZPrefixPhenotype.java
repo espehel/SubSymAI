@@ -27,7 +27,7 @@ public class LOLZPrefixPhenotype extends Phenotype {
     }
 
     @Override
-    public double calculateFitness() {
+    public void calculateFitness() {
         int f = 0;
         int l = data.get(0);
         for (Integer n : data){
@@ -38,7 +38,7 @@ public class LOLZPrefixPhenotype extends Phenotype {
         }
         f = f>(int) Settings.Z_VALUE && l==0 ? (int)Settings.Z_VALUE : f;
 
-        return f / (double) Settings.GENOTYPE_SIZE;
+        fitness = f / (double) Settings.GENOTYPE_SIZE;
     }
 
 }

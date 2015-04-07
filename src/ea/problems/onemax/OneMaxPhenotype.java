@@ -26,11 +26,11 @@ public class OneMaxPhenotype extends Phenotype {
     }
 
     @Override
-    public double calculateFitness() {
+    public void calculateFitness() {
         int f = 0;
         for (Integer n : data){
             f+=n;
         }
-        return f / (double) Settings.GENOTYPE_SIZE;
+        fitness = f / (double) Settings.GENOTYPE_SIZE;
     }
 }

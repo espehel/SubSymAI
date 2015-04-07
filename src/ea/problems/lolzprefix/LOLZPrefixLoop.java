@@ -15,7 +15,7 @@ public class LOLZPrefixLoop extends EvolutionaryLoop{
         return new LOLZPrefixPhenotype();
     }
 
-    @Override
+    /*@Override
     protected double calculateFitness(Phenotype pheno) {
         int f = 0;
         int l = ((LOLZPrefixPhenotype)pheno).data.get(0);
@@ -28,7 +28,7 @@ public class LOLZPrefixLoop extends EvolutionaryLoop{
         f = f>(int)Settings.Z_VALUE && l==0 ? (int)Settings.Z_VALUE : f;
 
         return f / (double) Settings.GENOTYPE_SIZE;
-    }
+    }*/
 
     @Override
     protected boolean goalAccomplished() {

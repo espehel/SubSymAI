@@ -30,4 +30,14 @@ public class Calculate {
     public static double averageFitness(List<Phenotype> population) {
         return sumFitness(population) / (double)population.size();
     }
+    public static double sigmoid(double x){
+        return 1.0 / (1.0 + Math.exp(-x));
+    }
+
+    public static Integer convertToInteger(boolean[] symbol) {
+        int n = 0;
+        for (boolean b : symbol)
+            n = (n << 1) | (b ? 1 : 0);
+        return n;
+    }
 }

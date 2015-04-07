@@ -5,6 +5,8 @@ import ea.core.selection.ParentSelection;
 import ea.gui.Controller;
 import utils.Calculate;
 import utils.Constants;
+import utils.GUIController;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,19 +17,21 @@ import java.util.Random;
 public abstract class EvolutionaryLoop {
 
     protected List<Phenotype> population;
-    Controller gui;
+    GUIController gui;
 
-    public void initialize(Controller gui) {
+    public void initialize(GUIController gui) {
         this.gui = gui;
         initializePopulation();
+
+    }
+
+    public void run() {
+        List<MatingPartners> matingPool;
+        List<Phenotype> children;
+
         testFitness(population);
         logState();
         gui.updateGraph(State.bestFitness);
-    }
-
-    public void start() {
-        List<MatingPartners> matingPool;
-        List<Phenotype> children;
 
         while(!goalAccomplished() && Settings.RUNNING) {
             matingPool = performParentSelection();
@@ -47,7 +51,23 @@ public abstract class EvolutionaryLoop {
         }
     }
 
-    private void logState() {
+    /**
+     * population must be initiated and tested before performing a step
+     */
+    public void step(){
+        List<MatingPartners> matingPool;
+        List<Phenotype> children;
+
+            matingPool = performParentSelection();
+            System.out.println("1: "+matingPool.size());
+            children = reproduction(matingPool);
+            System.out.println("2: "+children.size());
+            testFitness(children);
+            population = performAdultSelection(population, children);
+            System.out.println("3: "+population.size());
+    }
+
+    public void logState() {
         State.generationNumber++;
         State.averageFitness = Calculate.averageFitness(population);
         State.standardDeviation = Calculate.standardDeviation(population);
@@ -156,13 +176,14 @@ public abstract class EvolutionaryLoop {
      */
     protected abstract Phenotype generatePhenotype();
 
-    private void testFitness(List<Phenotype> phenotypes) {
+    public void testFitness(List<Phenotype> phenotypes) {
         for (Phenotype pheno : phenotypes){
-            pheno.fitness = calculateFitness(pheno);
+            //pheno.fitness = calculateFitness(pheno);
+            pheno.calculateFitness();
         }
     }
 
-    protected abstract double calculateFitness(Phenotype pheno);
+    //protected abstract double calculateFitness(Phenotype pheno);
 
     private List<MatingPartners> performParentSelection() {
 

@@ -15,14 +15,14 @@ public class OneMaxLoop extends EvolutionaryLoop {
         return new OneMaxPhenotype();
     }
 
-    @Override
+    /*@Override
     protected double calculateFitness(Phenotype pheno) {
         int f = 0;
         for (Integer n : ((OneMaxPhenotype)pheno).data){
             f+=n;
         }
         return f / (double)Settings.GENOTYPE_SIZE;
-    }
+    }*/
 
     @Override
     protected boolean goalAccomplished() {
