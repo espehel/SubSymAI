@@ -53,8 +53,10 @@ public abstract class EvolutionaryLoop {
 
     /**
      * population must be initiated and tested before performing a step
+     *
+     * @return if the current step acomplished the goal to finish
      */
-    public void step(){
+    public boolean step(){
         List<MatingPartners> matingPool;
         List<Phenotype> children;
 
@@ -65,6 +67,8 @@ public abstract class EvolutionaryLoop {
             testFitness(children);
             population = performAdultSelection(population, children);
             System.out.println("3: "+population.size());
+
+        return goalAccomplished();
     }
 
     public void logState() {
@@ -178,12 +182,12 @@ public abstract class EvolutionaryLoop {
 
     public void testFitness(List<Phenotype> phenotypes) {
         for (Phenotype pheno : phenotypes){
-            //pheno.fitness = calculateFitness(pheno);
-            pheno.calculateFitness();
+            calculateFitness(pheno);
+            //pheno.calculateFitness();
         }
     }
 
-    //protected abstract double calculateFitness(Phenotype pheno);
+    protected abstract void calculateFitness(Phenotype pheno);
 
     private List<MatingPartners> performParentSelection() {
 

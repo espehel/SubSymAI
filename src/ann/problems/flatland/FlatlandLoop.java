@@ -1,11 +1,7 @@
 package ann.problems.flatland;
 
-import com.sun.org.apache.xml.internal.security.signature.reference.ReferenceNodeSetData;
 import ea.core.*;
 import ea.core.Settings;
-import ea.problems.SuprisingSequence.SuprisingSequencePhenotype;
-import utils.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,12 +22,12 @@ public class FlatlandLoop extends EvolutionaryLoop {
         return new FlatlandPhenotype();
     }
 
-    /*@Override
-    protected double calculateFitness(Phenotype pheno) {
+    @Override
+    protected void calculateFitness(Phenotype pheno) {
         simulator.testFitness((FlatlandPhenotype) pheno);
 
-        return pheno.calculateFitness();
-    }*/
+        pheno.calculateFitness();
+    }
 
     @Override
     protected boolean goalAccomplished() {

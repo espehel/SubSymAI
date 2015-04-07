@@ -12,10 +12,10 @@ public class SuprisingSequenceLoop extends EvolutionaryLoop {
         return new SuprisingSequencePhenotype();
     }
 
-    /*@Override
-    protected double calculateFitness(Phenotype pheno) {
-        return pheno.calculateFitness();
-    }*/
+    @Override
+    protected void calculateFitness(Phenotype pheno) {
+        pheno.calculateFitness();
+    }
 
     @Override
     protected boolean goalAccomplished() {
