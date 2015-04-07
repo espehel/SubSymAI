@@ -12,6 +12,6 @@ public class Settings {
     public static double FOOD_DISTRIBUTION = 0.333;
     public static double POISON_DISTRIBUTION = 0.333;
     public static double MOVE_HOLD_THRESHOLD = 0.10;
-    public static final int POISON_PENALTY = 10;
+    public static final int POISON_PENALTY = 1;
 
 }

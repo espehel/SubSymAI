@@ -61,12 +61,12 @@ public abstract class EvolutionaryLoop {
         List<Phenotype> children;
 
             matingPool = performParentSelection();
-            System.out.println("1: "+matingPool.size());
+            //System.out.println("1: "+matingPool.size());
             children = reproduction(matingPool);
-            System.out.println("2: "+children.size());
+            //System.out.println("2: "+children.size());
             testFitness(children);
             population = performAdultSelection(population, children);
-            System.out.println("3: "+population.size());
+            //System.out.println("3: "+population.size());
 
         return goalAccomplished();
     }

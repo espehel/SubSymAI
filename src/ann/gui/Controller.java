@@ -248,7 +248,7 @@ public class Controller implements GUIController {
             bestSeries.getData().add(new XYChart.Data<>((double)State.generationNumber, bestFitness));
             averageSeries.getData().add(new XYChart.Data<>((double)State.generationNumber, State.averageFitness));
             sdSeries.getData().add(new XYChart.Data<>((double) State.generationNumber, State.standardDeviation));
-            System.out.println("graph: " + bestFitness);
+            //System.out.println("graph: " + bestFitness);
         });
     }
 

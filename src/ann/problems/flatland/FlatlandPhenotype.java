@@ -15,7 +15,7 @@ public class FlatlandPhenotype extends Phenotype{
     public double[] data;
     public int foodCount;
     public int poisonCount;
-    public static final int poisonPenalty = 10;
+    public int maxFood;
 
     public FlatlandPhenotype(double[] data) {
         this.data = data;
@@ -45,7 +45,8 @@ public class FlatlandPhenotype extends Phenotype{
 
     @Override
     public void calculateFitness() {
-        int f = foodCount - (poisonCount*Settings.POISON_PENALTY);
-        fitness = f>0 ? f : 0.1;
+        int score = foodCount - (poisonCount*Settings.POISON_PENALTY);
+        fitness = (double)score/(double)maxFood;
+        fitness = fitness>0.0001 ? fitness : 0.0001;
     }
 }

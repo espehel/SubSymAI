@@ -17,6 +17,7 @@ public class FlatlandSimulator implements ProblemSimulator {
     int[] flatlandContent;
     int[][] flatland;
     GUIController gui;
+    private Object foodCount;
 
 
     public FlatlandSimulator(){
@@ -31,7 +32,6 @@ public class FlatlandSimulator implements ProblemSimulator {
     public void initialize(GUIController gui) {
         this.gui = gui;
         initiateFlatlandContent();
-        flatland = generateFlatland();
         //assumes three layers total and that the middle layer is the average of input and output size
         ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,(Settings.ann.INPUT_SIZE+Settings.ann.INPUT_SIZE)/2,Settings.ann.OUTPUT_SIZE});
         Settings.ea.REPRESENTATION_SIZE = 8;
@@ -57,36 +57,33 @@ public class FlatlandSimulator implements ProblemSimulator {
 
         }
     }
-    private int[][] generateFlatland(){
-        int[][] flatland = new int[Settings.ann.FLATLAND_SIZE][Settings.ann.FLATLAND_SIZE];
+    private void generateFlatland(){
+        flatland = new int[Settings.ann.FLATLAND_SIZE][Settings.ann.FLATLAND_SIZE];
 
         for (int i = 0; i <flatland.length; i++) {
             for (int j = 0; j < flatland.length; j++) {
                 flatland[i][j] = flatlandContent[(i*flatland.length)+j];
             }
         }
-        return flatland;
     }
 
     @Override
     public void start() {
 
+        for (Phenotype phenotype : ea.getPopulation()) {
+            testFitness((FlatlandPhenotype) phenotype);
+            phenotype.calculateFitness();
+            System.out.println(phenotype.fitness);
+        }
+
         while (Settings.ea.RUNNING) {
-            for (Phenotype phenotype : ea.getPopulation()) {
-                testFitness((FlatlandPhenotype) phenotype);
-                //FlatlandPhenotype agent = (FlatlandPhenotype) phenotype;
-                //System.out.println(phenotype);
-                phenotype.calculateFitness();
-                System.out.println(phenotype.fitness);
-            }
-            System.out.println("testet fitness");
+
             ea.step();
             ea.logState();
             gui.updateGraph(State.bestFitness);
             if(Settings.ann.DYNAMIC)
                 initiateFlatlandContent();
-                flatland = generateFlatland();
-            System.out.println("end of loop");
+            //System.out.println("end of loop");
         }
 
     }
@@ -94,13 +91,14 @@ public class FlatlandSimulator implements ProblemSimulator {
     @Override
     public int[][] getBoardData() {
         initiateFlatlandContent();
-        return generateFlatland();
-        //return flatland;
+        generateFlatland();
+        return flatland;
     }
 
     @Override
     public void testAgent(Agent agent) {
         ann.setWeights(((FlatlandPhenotype)State.bestIndividual).data);
+        generateFlatland();
 
         for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
             double[] input = getInput(agent);
@@ -124,6 +122,8 @@ public class FlatlandSimulator implements ProblemSimulator {
 
     public void testFitness(FlatlandPhenotype phenotype) {
         ann.setWeights(phenotype.data);
+        generateFlatland();
+        phenotype.maxFood = getFoodCount();
 
         Agent agent = new Agent();
         for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
@@ -135,7 +135,7 @@ public class FlatlandSimulator implements ProblemSimulator {
             double bestValue = Settings.ann.MOVE_HOLD_THRESHOLD;
             int bestAction = Constants.MOVE_HOLD;
             for (int j = 0; j < output.length; j++) {
-                if(output[j]>bestValue){
+                if (output[j] > bestValue) {
                     bestValue = output[j];
                     bestAction = j;
                 }
@@ -191,5 +191,16 @@ public class FlatlandSimulator implements ProblemSimulator {
         double[] input =  new double[Settings.ann.INPUT_SIZE];
         System.out.println(input[3]);
 
+    }
+
+    public int getFoodCount() {
+        int c = 0;
+        for (int i = 0; i < flatland.length; i++) {
+            for (int j = 0; j < flatland[0].length; j++) {
+                if(flatland[i][j] == Constants.FLATLAND_CELLTYPE_FOOD)
+                    c++;
+            }
+        }
+        return c;
     }
 }
