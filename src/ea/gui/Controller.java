@@ -191,6 +191,11 @@ public class Controller implements GUIController{
         throw new NotImplementedException();
     }
 
+    @Override
+    public void updateGrid(int[][] board) {
+        throw new NotImplementedException();
+    }
+
     public void reset(){
         bestSeries.getData().clear();
         averageSeries.getData().clear();

@@ -68,4 +68,15 @@ public class Agent {
         else if(content == Constants.FLATLAND_CELLTYPE_POISON)
             poisonCount++;
     }
+
+    @Override
+    public String toString() {
+        return "Agent{" +
+                "front=" + front +
+                ", y=" + y +
+                ", x=" + x +
+                ", poisonCount=" + poisonCount +
+                ", foodCount=" + foodCount +
+                '}';
+    }
 }

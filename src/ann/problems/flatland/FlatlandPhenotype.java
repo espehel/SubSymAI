@@ -13,15 +13,14 @@ import java.util.ArrayList;
 public class FlatlandPhenotype extends Phenotype{
 
     public double[] data;
-    public int foodCount;
-    public int poisonCount;
+    Agent agent;
     public int maxFood;
 
     public FlatlandPhenotype(double[] data) {
         this.data = data;
     }
     public FlatlandPhenotype(){
-
+        agent = new Agent();
     }
 
 
@@ -45,8 +44,12 @@ public class FlatlandPhenotype extends Phenotype{
 
     @Override
     public void calculateFitness() {
-        int score = foodCount - (poisonCount*Settings.POISON_PENALTY);
+        int score = agent.foodCount - (agent.poisonCount*Settings.POISON_PENALTY);
         fitness = (double)score/(double)maxFood;
         fitness = fitness>0.0001 ? fitness : 0.0001;
+    }
+
+    public void resetAgent() {
+        agent = new Agent();
     }
 }

@@ -7,6 +7,7 @@ import ann.problems.flatland.Agent;
  */
 public interface GUIController {
     public void updateGraph(double bestFitness);
+    public void updateGrid(Agent agent);
+    public void updateGrid(int[][] board);
 
-    void updateGrid(Agent agent);
 }

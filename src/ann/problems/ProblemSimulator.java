@@ -10,6 +10,5 @@ public interface ProblemSimulator {
 
     public void initialize(GUIController gui);
     public void start();
-    public int[][] getBoardData();
-    public void testAgent(Agent agent);
+    public void runBestAgent();
 }

@@ -2,14 +2,9 @@ package ann.gui;
 
 import ann.problems.ProblemSimulator;
 import ann.problems.flatland.Agent;
-import ann.problems.flatland.FlatlandLoop;
 import ann.problems.flatland.FlatlandSimulator;
-import ea.core.EvolutionaryLoop;
 import ea.core.Settings;
 import ea.core.State;
-import ea.problems.SuprisingSequence.SuprisingSequenceLoop;
-import ea.problems.lolzprefix.LOLZPrefixLoop;
-import ea.problems.onemax.OneMaxLoop;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,11 +20,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Paint;
 import utils.Constants;
 import utils.GUIController;
-
-import java.io.File;
 
 
 public class Controller implements GUIController {
@@ -115,7 +107,7 @@ public class Controller implements GUIController {
             public void changed(ObservableValue<? extends Number> observable,
                                 Number oldValue, Number newValue) {
 
-                sliderLabel.setText("Loopdelay="+newValue.intValue());
+                sliderLabel.setText("Loopdelay=" + newValue.intValue());
                 Settings.LOOP_DELAY = newValue.intValue();
             }
         });
@@ -197,31 +189,45 @@ public class Controller implements GUIController {
                 return;
             gridContainer.setVisible(true);
             graph.setVisible(false);
-            Agent agent = new Agent();
-            //sim = new FlatlandSimulator();
-            updateGrid(sim.getBoardData());
-            updateGrid(agent);
-            sim.testAgent(agent);
+            flatlandView = !flatlandView;
+
+            Task task = new Task<Void>(){
+
+                @Override
+                protected Void call()  {
+                    Settings.RUNNING = true;
+                    try{
+                        sim.runBestAgent();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+            new Thread(task).start();
         }
-        flatlandView = !flatlandView;
 
     }
 
-    private void updateGrid(int[][] boardData) {
-        for (int i = 0; i < boardData.length; i++) {
-            for (int j = 0; j < boardData[0].length; j++) {
-                Image image;
-                if(boardData[i][j] == Constants.FLATLAND_CELLTYPE_EMPTY)
-                     image = new Image("resources/Empty.png");
-                else if(boardData[i][j] == Constants.FLATLAND_CELLTYPE_POISON)
-                    image = new Image("resources/Poison.png");
-                else
-                    image = new Image("resources/Strawberry.png");
+    public void updateGrid(int[][] boardData) {
+        Platform.runLater(()->{
 
-                imageViews[i][j].setImage(image);
-            }
+            for (int i = 0; i < boardData.length; i++) {
+                for (int j = 0; j < boardData[0].length; j++) {
+                    Image image;
+                    if(boardData[i][j] == Constants.FLATLAND_CELLTYPE_EMPTY)
+                         image = new Image("resources/Empty.png");
+                    else if(boardData[i][j] == Constants.FLATLAND_CELLTYPE_POISON)
+                        image = new Image("resources/Poison.png");
+                    else
+                        image = new Image("resources/Strawberry.png");
+
+                    imageViews[i][j].setImage(image);
+                }
         }
-    }
+    });
+
+}
 
     private void saveSettings() {
         Settings.GENOTYPE_SIZE = Integer.parseInt(genotypeSize.getText());
@@ -254,14 +260,15 @@ public class Controller implements GUIController {
 
     @Override
     public void updateGrid(Agent agent) {
-        if(lastPos[0] != -1){
+        Platform.runLater(()->{
+            if(lastPos[0] != -1){
             imageViews[lastPos[0]][lastPos[1]].setImage(new Image("resources/Empty.png"));
         }
 
         imageViews[agent.x][agent.y].setImage(new Image("resources/Pac-Man-" + agent.front.toString()+".png"));
         lastPos[0] = agent.x;
         lastPos[1] = agent.y;
-
+        });
     }
 
     public void reset(){
