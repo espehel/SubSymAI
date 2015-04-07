@@ -45,14 +45,12 @@ public class FlatlandSimulator implements ProblemSimulator {
         //index 0 is where the agent starts
         flatlandContent[0] = Constants.FLATLAND_CELLTYPE_EMPTY;
         for (int i = 1; i < flatlandContent.length; i++) {
-            if(Math.random()< Settings.ann.FOOD_DISTRIBUTION){
+            if(Math.random()<= Settings.ann.FOOD_DISTRIBUTION){
                 flatlandContent[i] = Constants.FLATLAND_CELLTYPE_FOOD;
-
                 continue;
             }
             if(Math.random()<Settings.ann.POISON_DISTRIBUTION){
                 flatlandContent[i] = Constants.FLATLAND_CELLTYPE_POISON;
-
                 continue;
             }
             flatlandContent[i] = Constants.FLATLAND_CELLTYPE_EMPTY;

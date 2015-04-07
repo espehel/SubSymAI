@@ -30,4 +30,5 @@ public class Settings {
     public static int OPERATOR_CROSSOVER = Constants.CROSSOVER_ONE_POINT;
     public static int OPERATOR_MUTATION = Constants.MUTATION_BIT_STRING;
     public static int K_VALUE = 10;
+    public static int ELITISM_COUNT = 5;
 }
