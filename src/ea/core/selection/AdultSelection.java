@@ -24,6 +24,8 @@ public class AdultSelection {
 
         Collections.sort(children);
         for (int i = 0; i < Settings.ADULT_POOL_SIZE; i++) {
+            if(i>children.size())
+                break;
             survivors.add(children.get(i));
         }
 

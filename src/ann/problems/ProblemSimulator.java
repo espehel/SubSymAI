@@ -11,4 +11,5 @@ public interface ProblemSimulator {
     public void initialize(GUIController gui);
     public void start();
     public void runBestAgent();
+    public void generateNewContent();
 }

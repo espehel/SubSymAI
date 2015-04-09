@@ -37,7 +37,6 @@ public class FlatlandSimulator implements ProblemSimulator {
         ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,(Settings.ann.INPUT_SIZE+Settings.ann.INPUT_SIZE)/2,Settings.ann.OUTPUT_SIZE});
         Settings.ea.REPRESENTATION_SIZE = 8;
         Settings.ea.GENOTYPE_SIZE = ann.totalNetworkWeights*Settings.ea.REPRESENTATION_SIZE;
-        Settings.ea.MAX_GENERATIONS = 200;
         ea.initialize(gui);
     }
 
@@ -92,13 +91,14 @@ public class FlatlandSimulator implements ProblemSimulator {
 
         boolean finished = false;
 
-        while (!finished) {
+        while (!ea.goalAccomplished()) {
 
-            finished = ea.step();
-            ea.logState();
+            ea.step();
             gui.updateGraph(State.bestFitness);
             if(Settings.ann.DYNAMIC)
                 initiateFlatlandContent();
+            ea.testFitness(ea.getPopulation());
+            ea.logState();
             //System.out.println("end of loop");
         }
 
@@ -139,6 +139,11 @@ public class FlatlandSimulator implements ProblemSimulator {
             System.out.println(phenotype.agent);
         }
         System.out.println(phenotype.agent);
+    }
+
+    @Override
+    public void generateNewContent() {
+        initiateFlatlandContent();
     }
 
     public void testFitness(FlatlandPhenotype phenotype) {

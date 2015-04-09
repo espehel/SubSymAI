@@ -74,14 +74,17 @@
         <Label text="Crossover rate:" GridPane.columnIndex="0" GridPane.rowIndex="11" />
         <TextField fx:id="crossoverRate" text="1" GridPane.columnIndex="1" GridPane.rowIndex="11" />
         <Label text="Max generations:" GridPane.columnIndex="0" GridPane.rowIndex="12" />
-        <TextField fx:id="maxGens" text="-1" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+        <TextField fx:id="maxGens" text="400" GridPane.columnIndex="1" GridPane.rowIndex="12" />
         <Label text="Epsilon:" GridPane.columnIndex="0" GridPane.rowIndex="13" />
         <TextField fx:id="epsilon" text="0.1" GridPane.columnIndex="1" GridPane.rowIndex="13" />
-        <Label text="Localsequence:" GridPane.columnIndex="0" GridPane.rowIndex="14" />
-        <CheckBox fx:id="localSequence" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+        <Label text="Dynamic:" GridPane.columnIndex="0" GridPane.rowIndex="14" />
+        <CheckBox fx:id="dynamic" GridPane.columnIndex="1" GridPane.rowIndex="14" />
         <Label text="K:" GridPane.columnIndex="0" GridPane.rowIndex="15" />
         <TextField fx:id="kValue" text="30" GridPane.columnIndex="1" GridPane.rowIndex="15" />
         <Label text="Agent visualization: " GridPane.columnIndex="0" GridPane.rowIndex="16"></Label>
-        <Button fx:id="toggleVisualButton" GridPane.columnIndex="1" GridPane.rowIndex="16" text="Test Agent" onAction="#toggleVisual"/>
+        <Button fx:id="toggleVisualButton" GridPane.columnIndex="1" GridPane.rowIndex="16" text="Toggle view" onAction="#toggleVisual"/>
+        <Button fx:id="runDynamicButton" GridPane.columnIndex="0" GridPane.rowIndex="17" text="Run Dynamic" onAction="#runDynamic" visible="false"/>
+        <Button fx:id="runLastButton" GridPane.columnIndex="1" GridPane.rowIndex="17" text="Run Last" onAction="#runLast" visible="false"/>
+
     </GridPane>
 </GridPane>

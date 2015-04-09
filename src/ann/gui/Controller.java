@@ -23,6 +23,8 @@ import javafx.scene.layout.*;
 import utils.Constants;
 import utils.GUIController;
 
+import java.lang.reflect.AnnotatedArrayType;
+
 
 public class Controller implements GUIController {
 
@@ -69,13 +71,17 @@ public class Controller implements GUIController {
     @FXML
     private TextField epsilon;
     @FXML
-    private CheckBox localSequence;
+    private CheckBox dynamic;
     @FXML
     private TextField crossoverRate;
     @FXML
     private TextField mutationRate;
     @FXML
     private TextField kValue;
+    @FXML
+    private Button runDynamicButton;
+    @FXML
+    private Button runLastButton;
 
     private boolean flatlandView = false;
     ImageView[][] imageViews;
@@ -117,7 +123,7 @@ public class Controller implements GUIController {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 ImageView imageView = new ImageView();
-                imageView.setImage(new Image("resources/Pac-Man-South.png"));
+                imageView.setImage(new Image("resources/Empty.png"));
                 StackPane pane = new StackPane();
                 pane.setPrefSize(32,32);
                 pane.getChildren().add(imageView);
@@ -180,33 +186,25 @@ public class Controller implements GUIController {
     }
     @FXML
     public void toggleVisual(){
+        //EA view
         if(flatlandView) {
             gridContainer.setVisible(false);
             graph.setVisible(true);
+            runDynamicButton.setVisible(false);
+            runLastButton.setVisible(false);
         }
+        //flatland view
         else{
             if(sim == null)
                 return;
             gridContainer.setVisible(true);
             graph.setVisible(false);
-            flatlandView = !flatlandView;
+            runDynamicButton.setVisible(true);
+            runLastButton.setVisible(true);
 
-            Task task = new Task<Void>(){
-
-                @Override
-                protected Void call()  {
-                    Settings.RUNNING = true;
-                    try{
-                        sim.runBestAgent();
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-            new Thread(task).start();
         }
 
+        flatlandView = !flatlandView;
     }
 
     public void updateGrid(int[][] boardData) {
@@ -238,7 +236,7 @@ public class Controller implements GUIController {
         Settings.EPSILON = Double.parseDouble(epsilon.getText());
         long maxG = Long.parseLong(maxGens.getText());
         Settings.MAX_GENERATIONS = maxG < 0 ? Long.MAX_VALUE : maxG;
-        Settings.LOCAL_SEQUENCE = localSequence.isSelected();
+        ann.core.Settings.DYNAMIC = dynamic.isSelected();
         Settings.MUTATION_RATE = Double.parseDouble(mutationRate.getText());
         Settings.CROSSOVER_RATE = Double.parseDouble(crossoverRate.getText());
 
@@ -269,6 +267,41 @@ public class Controller implements GUIController {
         lastPos[0] = agent.x;
         lastPos[1] = agent.y;
         });
+    }
+    @FXML
+    public void runDynamic(){
+        Task task = new Task<Void>(){
+
+            @Override
+            protected Void call()  {
+                Settings.RUNNING = true;
+                try{
+                    sim.generateNewContent();
+                    sim.runBestAgent();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
+    }
+    @FXML
+    public void runLast(){
+        Task task = new Task<Void>(){
+
+            @Override
+            protected Void call()  {
+                Settings.RUNNING = true;
+                try{
+                    sim.runBestAgent();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     public void reset(){
