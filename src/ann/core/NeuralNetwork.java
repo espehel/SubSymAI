@@ -48,7 +48,7 @@ public class NeuralNetwork {
             return new double[0];
         double[] weights = new double[inputSize];
         for (int i = 0; i <inputSize; i++) {
-            weights[i] = Math.random();
+            weights[i] = Math.random()-Math.random();
         }
         return weights;
     }

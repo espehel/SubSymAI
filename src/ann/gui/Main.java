@@ -28,6 +28,7 @@ public class Main extends Application {
         Scene scene = new Scene(root, Color.BLUE);
 
         stage.setScene(scene);
+        stage.setWidth(1000);
         stage.show();
     }
 }

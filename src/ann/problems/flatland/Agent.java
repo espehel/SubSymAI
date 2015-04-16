@@ -29,10 +29,18 @@ public class Agent {
         right = Direction.EAST;
     }
 
+    public Agent(int foodCount, int poisonCount) {
+        this();
+        this.foodCount = foodCount;
+        this.poisonCount = poisonCount;
+
+
+    }
+
     public void move(int action) {
 
         switch (action){
-            case Constants.MOVE_HOLD:
+            case Constants.NO_ACTION:
                 return;
             case Constants.MOVE_LEFT:
                 left = left.left();

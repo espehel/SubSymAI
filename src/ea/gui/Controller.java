@@ -1,6 +1,8 @@
 package ea.gui;
 
 import ann.problems.flatland.Agent;
+import ann.problems.tracker.FallingBlock;
+import ann.problems.tracker.TrackerBlock;
 import ea.problems.SuprisingSequence.SuprisingSequenceLoop;
 import ea.core.EvolutionaryLoop;
 import ea.core.Settings;
@@ -193,6 +195,11 @@ public class Controller implements GUIController{
 
     @Override
     public void updateGrid(int[][] board) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void updateGrid(TrackerBlock tracker, FallingBlock fallingBlock) {
         throw new NotImplementedException();
     }
 

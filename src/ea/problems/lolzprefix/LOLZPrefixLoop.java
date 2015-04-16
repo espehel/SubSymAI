@@ -1,14 +1,26 @@
 package ea.problems.lolzprefix;
 
 import ea.core.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
  * Created by espen on 11/03/15.
  */
 public class LOLZPrefixLoop extends EvolutionaryLoop{
+
+    @Override
+    protected Phenotype onePointPhenoSpecificCrossover(Phenotype partner1, Phenotype partner2, int crossPointS) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    protected void phenoSpecificMutation(List<Phenotype> children) {
+        throw new NotImplementedException();
+    }
 
     @Override
     protected Phenotype generatePhenotype() {

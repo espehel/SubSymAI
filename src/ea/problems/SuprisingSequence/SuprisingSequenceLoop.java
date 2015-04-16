@@ -1,11 +1,23 @@
 package ea.problems.SuprisingSequence;
 
 import ea.core.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class SuprisingSequenceLoop extends EvolutionaryLoop {
+
+    @Override
+    protected Phenotype onePointPhenoSpecificCrossover(Phenotype partner1, Phenotype partner2, int crossPointS) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    protected void phenoSpecificMutation(List<Phenotype> children) {
+        throw new NotImplementedException();
+    }
 
     @Override
     protected Phenotype generatePhenotype() {

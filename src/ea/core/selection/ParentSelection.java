@@ -133,7 +133,7 @@ public class ParentSelection {
             }
         }
       //  System.out.println(population.size());
-        do{
+        //do{
             randomValue = Math.random();
             for (Phenotype parent : population){
                 if(parent.inRange(randomValue)){
@@ -142,7 +142,7 @@ public class ParentSelection {
                 }
              //   System.out.println("sada");
             }
-        }while(chosenMates.partner1 == chosenMates.partner2);
+        //}while(chosenMates.partner1 == chosenMates.partner2);
     //    System.out.println(chosenMates);
         return chosenMates;
     }

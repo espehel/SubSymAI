@@ -27,8 +27,10 @@ public class Settings {
     public static boolean ADULT_SELECTION_FULLREPLACEMENT = true;
     public static boolean ADULT_SELECTION_OVERPRODUCTION = false;
     public static boolean ADULT_SELECTION_GENERATIONMIXING = false;
-    public static int OPERATOR_CROSSOVER = Constants.CROSSOVER_ONE_POINT;
-    public static int OPERATOR_MUTATION = Constants.MUTATION_BIT_STRING;
+    public static int OPERATOR_CROSSOVER = Constants.CROSSOVER_ONE_POINT_PHENO_SPECIFIC;
+    public static int OPERATOR_MUTATION = Constants.MUTATION_PHENOSPECIFIC;
+    //public static int OPERATOR_CROSSOVER = Constants.CROSSOVER_ONE_POINT;
+    //public static int OPERATOR_MUTATION = Constants.MUTATION_PROBABILITY;
     public static int K_VALUE = 10;
     public static int ELITISM_COUNT = 5;
 }

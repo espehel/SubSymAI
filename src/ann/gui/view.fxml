@@ -16,6 +16,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <GridPane fx:controller="ann.gui.Controller" xmlns:fx="http://javafx.com/fxml"
           alignment="center" hgap="10" vgap="10">
 
@@ -32,21 +33,21 @@
     </GridPane>
     <GridPane fx:id="controls" GridPane.columnIndex="1" GridPane.rowIndex="0">
         <Label text="Child pool size:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <TextField fx:id="childPoolSize" text="30" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <TextField fx:id="childPoolSize" text="300" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label text="Adult pool size:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <TextField fx:id="adultPoolSize" text="60" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextField fx:id="adultPoolSize" text="300" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <Label  text="Genotype size(L):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
         <TextField fx:id="genotypeSize" text="20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <Label fx:id="sliderLabel" text="Loopdelay=40" GridPane.columnIndex="0" GridPane.rowIndex="3" />
         <Slider fx:id="loopDelaySlider" min="0" max="1000" value="40" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        <Label text="Z-value(S):" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-        <TextField fx:id="zValue" text="4" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label text="Series Count" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <TextField fx:id="seriesCount" text="5" GridPane.columnIndex="1" GridPane.rowIndex="4" />
         <fx:define>
             <ToggleGroup fx:id="parentSelectToggler"/>
         </fx:define>
         <children >
-            <RadioButton fx:id="fitnessPropToggle" onAction="#onParentSelectionAction" text="Fitness Proportinate" toggleGroup="$parentSelectToggler" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-            <RadioButton fx:id="sigmaScaleToggle" text="Sigma Scaling" onAction="#onParentSelectionAction" toggleGroup="$parentSelectToggler" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+            <RadioButton fx:id="fitnessPropToggle" onAction="#onParentSelectionAction" text="Fitness Proportinate" toggleGroup="$parentSelectToggler" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <RadioButton fx:id="sigmaScaleToggle" text="Sigma Scaling" onAction="#onParentSelectionAction" toggleGroup="$parentSelectToggler" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
             <RadioButton fx:id="tournamentToggle" text="Tournament Selection" onAction="#onParentSelectionAction" toggleGroup="$parentSelectToggler" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
             <RadioButton fx:id="boltzmannToggle" text="Boltzmann Selection" onAction="#onParentSelectionAction" toggleGroup="$parentSelectToggler" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
         </children>
@@ -54,14 +55,15 @@
             <ToggleGroup fx:id="adultSelectToggler"/>
         </fx:define>
         <children >
-            <RadioButton fx:id="fullRepToggle" onAction="#onAdultSelectionAction" text="Full replacement" toggleGroup="$adultSelectToggler" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            <RadioButton fx:id="fullRepToggle" onAction="#onAdultSelectionAction" text="Full replacement" toggleGroup="$adultSelectToggler" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
             <RadioButton fx:id="overProdToggle" onAction="#onAdultSelectionAction" text="Over production" toggleGroup="$adultSelectToggler" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-            <RadioButton fx:id="mixedToggle" onAction="#onAdultSelectionAction" text="Generation mixing" toggleGroup="$adultSelectToggler" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+            <RadioButton fx:id="mixedToggle" onAction="#onAdultSelectionAction" text="Generation mixing" toggleGroup="$adultSelectToggler" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
         </children>
         <ComboBox fx:id="problemCombo" value="Flatland" GridPane.columnIndex="0" GridPane.rowIndex="9">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Flatland" />
+                    <String fx:value="Tracker" />
                 </FXCollections>
             </items>
         </ComboBox>
@@ -72,15 +74,15 @@
         <Label text="Mutation rate:" GridPane.columnIndex="0" GridPane.rowIndex="10" />
         <TextField fx:id="mutationRate" text="0.1" GridPane.columnIndex="1" GridPane.rowIndex="10" />
         <Label text="Crossover rate:" GridPane.columnIndex="0" GridPane.rowIndex="11" />
-        <TextField fx:id="crossoverRate" text="1" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+        <TextField fx:id="crossoverRate" text="0.7" GridPane.columnIndex="1" GridPane.rowIndex="11" />
         <Label text="Max generations:" GridPane.columnIndex="0" GridPane.rowIndex="12" />
         <TextField fx:id="maxGens" text="400" GridPane.columnIndex="1" GridPane.rowIndex="12" />
         <Label text="Epsilon:" GridPane.columnIndex="0" GridPane.rowIndex="13" />
         <TextField fx:id="epsilon" text="0.1" GridPane.columnIndex="1" GridPane.rowIndex="13" />
         <Label text="Dynamic:" GridPane.columnIndex="0" GridPane.rowIndex="14" />
         <CheckBox fx:id="dynamic" GridPane.columnIndex="1" GridPane.rowIndex="14" />
-        <Label text="K:" GridPane.columnIndex="0" GridPane.rowIndex="15" />
-        <TextField fx:id="kValue" text="30" GridPane.columnIndex="1" GridPane.rowIndex="15" />
+        <Label text="Poison penalty:" GridPane.columnIndex="0" GridPane.rowIndex="15" />
+        <TextField fx:id="poisonPenalty" text="5" GridPane.columnIndex="1" GridPane.rowIndex="15" />
         <Label text="Agent visualization: " GridPane.columnIndex="0" GridPane.rowIndex="16"></Label>
         <Button fx:id="toggleVisualButton" GridPane.columnIndex="1" GridPane.rowIndex="16" text="Toggle view" onAction="#toggleVisual"/>
         <Button fx:id="runDynamicButton" GridPane.columnIndex="0" GridPane.rowIndex="17" text="Run Dynamic" onAction="#runDynamic" visible="false"/>

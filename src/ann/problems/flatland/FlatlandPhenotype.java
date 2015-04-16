@@ -1,16 +1,19 @@
 package ann.problems.flatland;
 
+import ann.core.ANNPhenotype;
 import ann.core.Settings;
 import com.sun.tools.internal.xjc.model.nav.EagerNClass;
 import ea.core.Phenotype;
 import utils.Calculate;
+import utils.Constants;
+import utils.Direction;
 
 import java.util.ArrayList;
 
 /**
  * Created by espen on 01/04/15.
  */
-public class FlatlandPhenotype extends Phenotype{
+public class FlatlandPhenotype extends ANNPhenotype {
 
     public double[] data;
     Agent agent;
@@ -49,7 +52,17 @@ public class FlatlandPhenotype extends Phenotype{
         fitness = fitness>0.0001 ? fitness : 0.0001;
     }
 
-    public void resetAgent() {
+    /**
+     * creates a completly fresh new instance of the agent for this pheotype
+     */
+    public void hardResetAgent() {
         agent = new Agent();
+    }
+
+    /**
+     * creates a new agent instance for this phenotype, but keeps the food and poisoncount from the old instance.
+     */
+    public void softResetAgent(){
+        agent = new Agent(agent.foodCount,agent.poisonCount);
     }
 }

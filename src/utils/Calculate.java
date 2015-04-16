@@ -31,6 +31,7 @@ public class Calculate {
         return sumFitness(population) / (double)population.size();
     }
     public static double sigmoid(double x){
+        //return 1.0 / (1.0 + Math.exp(-x/-1d));
         return 1.0 / (1.0 + Math.exp(-x));
     }
 

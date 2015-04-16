@@ -2,7 +2,6 @@ package ea.core;
 
 import ea.core.selection.AdultSelection;
 import ea.core.selection.ParentSelection;
-import ea.gui.Controller;
 import utils.Calculate;
 import utils.Constants;
 import utils.GUIController;
@@ -95,6 +94,22 @@ public abstract class EvolutionaryLoop {
         List<Phenotype> children = new ArrayList<>();
 
         for (int i = 0; i < matingPool.size(); i++) {
+
+            /*
+            if(matingPool.get(i).samePartner() || Settings.CROSSOVER_RATE > Math.random()){
+                Phenotype baby1 = generatePhenotype();
+                Phenotype baby2 = generatePhenotype();
+                baby1.genotype = new Genotype(matingPool.get(i).partner1.genotype.geno.clone());
+                baby2.genotype = new Genotype(matingPool.get(i).partner2.genotype.geno.clone());
+                baby1.develop();
+                baby2.develop();
+                children.add(baby1);
+                children.add(baby2);
+                continue;
+            }
+            */
+
+
             switch (Settings.OPERATOR_CROSSOVER) {
                 case Constants.CROSSOVER_ONE_POINT:
                     int crossPoint = new Random().nextInt(Settings.GENOTYPE_SIZE);
@@ -107,6 +122,11 @@ public abstract class EvolutionaryLoop {
                     children.add(twoPointCrossover(matingPool.get(i).partner1,matingPool.get(i).partner2,crossPoint1,crossPoint2));
                     children.add(twoPointCrossover(matingPool.get(i).partner2,matingPool.get(i).partner1, crossPoint1, crossPoint2));
                     break;
+                case Constants.CROSSOVER_ONE_POINT_PHENO_SPECIFIC:
+                    int crossPointS = new Random().nextInt(Settings.GENOTYPE_SIZE/Settings.REPRESENTATION_SIZE);
+                    children.add(onePointPhenoSpecificCrossover(matingPool.get(i).partner1, matingPool.get(i).partner2, crossPointS));
+                    children.add(onePointPhenoSpecificCrossover(matingPool.get(i).partner2, matingPool.get(i).partner1, crossPointS));
+                    break;
             }
         }
 
@@ -117,10 +137,18 @@ public abstract class EvolutionaryLoop {
             case Constants.MUTATION_PROBABILITY:
                 singleProbabilityMutation(children);
                 break;
+            case Constants.MUTATION_PHENOSPECIFIC:
+                phenoSpecificMutation(children);
+                break;
         }
 
-        return children;
+    return children;
     }
+
+    protected abstract Phenotype onePointPhenoSpecificCrossover(Phenotype partner1, Phenotype partner2, int crossPointS);
+
+
+    protected abstract void phenoSpecificMutation(List<Phenotype> children);
 
     private void singleProbabilityMutation(List<Phenotype> children) {
         for (Phenotype child : children){
@@ -145,6 +173,7 @@ public abstract class EvolutionaryLoop {
 
     private Phenotype twoPointCrossover(Phenotype topParent, Phenotype botParent, int crossPoint1, int crossPoint2) {
 
+
         Phenotype child = generatePhenotype();
         boolean[] data = new boolean[Settings.GENOTYPE_SIZE];
         for (int i = 0; i < Settings.GENOTYPE_SIZE; i++) {
@@ -163,7 +192,7 @@ public abstract class EvolutionaryLoop {
 
         Phenotype child = generatePhenotype();
         boolean[] data = new boolean[Settings.GENOTYPE_SIZE];
-        boolean crossover = Math.random()<Settings.CROSSOVER_RATE;
+        boolean crossover = Math.random()<Settings.CROSSOVER_RATE && topParent!=botParent;
         for (int i = 0; i < Settings.GENOTYPE_SIZE; i++) {
             if(crossover)
                 data[i] = i < crossPoint ? topParent.genotype.geno[i] : botParent.genotype.geno[i];

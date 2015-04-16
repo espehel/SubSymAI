@@ -2,22 +2,23 @@ package ann.problems.flatland;
 
 import ann.core.NeuralNetwork;
 import ann.problems.ProblemSimulator;
-import com.sun.codemodel.internal.JForEach;
 import ea.core.*;
 import utils.*;
 import utils.Settings;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by espen on 02/04/15.
  */
 @SuppressWarnings("AccessStaticViaInstance")
-public class FlatlandSimulator implements ProblemSimulator {
+public class FlatlandSimulator extends ProblemSimulator {
 
-    NeuralNetwork ann;
     FlatlandLoop ea;
     int[] flatlandContent;
+    List<int[]> contentSeries;
     int[][] flatland;
-    GUIController gui;
     private Object foodCount;
 
 
@@ -25,22 +26,33 @@ public class FlatlandSimulator implements ProblemSimulator {
         ann = new NeuralNetwork();
         ea = new FlatlandLoop(this);
         flatland = new int[Settings.ann.FLATLAND_SIZE][Settings.ann.FLATLAND_SIZE];
-        flatlandContent = new int[Settings.ann.FLATLAND_SIZE*Settings.ann.FLATLAND_SIZE];
     }
 
 
     @Override
     public void initialize(GUIController gui) {
         this.gui = gui;
-        initiateFlatlandContent();
+        flatlandContent = getNewFlatlandContent();
         //assumes three layers total and that the middle layer is the average of input and output size
-        ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,(Settings.ann.INPUT_SIZE+Settings.ann.INPUT_SIZE)/2,Settings.ann.OUTPUT_SIZE});
-        Settings.ea.REPRESENTATION_SIZE = 8;
-        Settings.ea.GENOTYPE_SIZE = ann.totalNetworkWeights*Settings.ea.REPRESENTATION_SIZE;
+        //TODO: prøve å ikke ha et hidden layer
+        //ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,(Settings.ann.INPUT_SIZE+Settings.ann.OUTPUT_SIZE)/2,Settings.ann.OUTPUT_SIZE});
+        ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,Settings.ann.OUTPUT_SIZE});
+        //Settings.ea.REPRESENTATION_SIZE = 32;
+        Settings.ea.GENOTYPE_SIZE = ann.totalNetworkWeights;//*Settings.ea.REPRESENTATION_SIZE;
         ea.initialize(gui);
     }
 
-    private void initiateFlatlandContent() {
+    public List<int[]> getFlatlandContentSeries(){
+        List<int[]> contentSeries = new ArrayList<>();
+        for (int i = 0; i < Settings.ann.SERIES_COUNT; i++) {
+            contentSeries.add(getNewFlatlandContent());
+        }
+        return contentSeries;
+    }
+
+    private int[] getNewFlatlandContent() {
+        int[] flatlandContent = new int[Settings.ann.FLATLAND_SIZE*Settings.ann.FLATLAND_SIZE];
+
         //index 0 is where the agent starts
         flatlandContent[0] = Constants.FLATLAND_CELLTYPE_EMPTY;
         for (int i = 1; i < flatlandContent.length; i++) {
@@ -69,8 +81,12 @@ public class FlatlandSimulator implements ProblemSimulator {
         double pr = p/(100d-f);
         double er = e/100.0;
         System.out.println(f+p+e);*/
+        return flatlandContent;
     }
     private void generateFlatland(){
+        generateFlatland(flatlandContent);
+    }
+    private void generateFlatland(int[] flatlandContent) {
         flatland = new int[Settings.ann.FLATLAND_SIZE][Settings.ann.FLATLAND_SIZE];
 
         for (int i = 0; i <flatland.length; i++) {
@@ -82,6 +98,8 @@ public class FlatlandSimulator implements ProblemSimulator {
 
     @Override
     public void start() {
+
+        contentSeries = getFlatlandContentSeries();
 
         for (Phenotype phenotype : ea.getPopulation()) {
             testFitness((FlatlandPhenotype) phenotype);
@@ -96,8 +114,9 @@ public class FlatlandSimulator implements ProblemSimulator {
             ea.step();
             gui.updateGraph(State.bestFitness);
             if(Settings.ann.DYNAMIC)
-                initiateFlatlandContent();
-            ea.testFitness(ea.getPopulation());
+                //flatlandContent = getNewFlatlandContent();
+                contentSeries = getFlatlandContentSeries();
+            //ea.testFitness(ea.getPopulation());
             ea.logState();
             //System.out.println("end of loop");
         }
@@ -109,7 +128,7 @@ public class FlatlandSimulator implements ProblemSimulator {
         FlatlandPhenotype phenotype = (FlatlandPhenotype) State.bestIndividual;
         ann.setWeights(phenotype.data);
         generateFlatland();
-        phenotype.resetAgent();
+        phenotype.hardResetAgent();
         gui.updateGrid(flatland);
         gui.updateGrid(phenotype.agent);
 
@@ -123,15 +142,7 @@ public class FlatlandSimulator implements ProblemSimulator {
             double[] input = getInput(phenotype.agent);
             double[] output = ann.feedInput(input);
             //get action from output
-            double bestValue = Settings.ann.MOVE_HOLD_THRESHOLD;
-            int bestAction = Constants.MOVE_HOLD;
-            for (int j = 0; j < output.length; j++) {
-                if(output[j]>bestValue){
-                    bestValue = output[j];
-                    bestAction = j;
-                }
-
-            }
+            int bestAction = phenotype.getAction(output);
             phenotype.agent.move(bestAction);
             phenotype.agent.eat(flatland[phenotype.agent.x][phenotype.agent.y]);
             flatland[phenotype.agent.x][phenotype.agent.y] = Constants.FLATLAND_CELLTYPE_EMPTY;
@@ -143,36 +154,35 @@ public class FlatlandSimulator implements ProblemSimulator {
 
     @Override
     public void generateNewContent() {
-        initiateFlatlandContent();
+        flatlandContent = getNewFlatlandContent();
     }
 
     public void testFitness(FlatlandPhenotype phenotype) {
         ann.setWeights(phenotype.data);
-        generateFlatland();
-        phenotype.maxFood = getFoodCount();
-        phenotype.resetAgent();
+        phenotype.maxFood = 0;
+        phenotype.hardResetAgent();
 
-        for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
-            double[] input = getInput(phenotype.agent);
-            //Print.array("input", input);
-            double[] output = ann.feedInput(input);
-            //Print.array("output" , output);
-            //get action from output
-            double bestValue = Settings.ann.MOVE_HOLD_THRESHOLD;
-            int bestAction = Constants.MOVE_HOLD;
-            for (int j = 0; j < output.length; j++) {
-                if (output[j] > bestValue) {
-                    bestValue = output[j];
-                    bestAction = j;
-                }
+        for (int[] scenario : contentSeries) {
+            generateFlatland(scenario);
+            phenotype.maxFood += getFoodCount();
+            phenotype.softResetAgent();
 
+            for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
+                double[] input = getInput(phenotype.agent);
+                //Print.array("input", input);
+                double[] output = ann.feedInput(input);
+                //Print.array("output" , output);
+                //get action from output
+                int bestAction = phenotype.getAction(output);
+
+                phenotype.agent.move(bestAction);
+                phenotype.agent.eat(flatland[phenotype.agent.x][phenotype.agent.y]);
+                flatland[phenotype.agent.x][phenotype.agent.y] = Constants.FLATLAND_CELLTYPE_EMPTY;
             }
-            phenotype.agent.move(bestAction);
-            phenotype.agent.eat(flatland[phenotype.agent.x][phenotype.agent.y]);
-            flatland[phenotype.agent.x][phenotype.agent.y] = Constants.FLATLAND_CELLTYPE_EMPTY;
         }
 
     }
+
 
     private double[] getInput(Agent agent) {
         double[] input =  new double[Settings.ann.INPUT_SIZE];

@@ -3,6 +3,9 @@ package ann.gui;
 import ann.problems.ProblemSimulator;
 import ann.problems.flatland.Agent;
 import ann.problems.flatland.FlatlandSimulator;
+import ann.problems.tracker.BlockObject;
+import ann.problems.tracker.FallingBlock;
+import ann.problems.tracker.TrackerBlock;
 import ea.core.Settings;
 import ea.core.State;
 import javafx.application.Platform;
@@ -23,10 +26,19 @@ import javafx.scene.layout.*;
 import utils.Constants;
 import utils.GUIController;
 
-import java.lang.reflect.AnnotatedArrayType;
+import javax.management.relation.InvalidRelationTypeException;
 
 
 public class Controller implements GUIController {
+
+    private static final String WHITE = "-fx-background-color: WHITE;\n";
+    private static final String BLUE = "-fx-background-color: BLUE;\n";
+
+    private static final String RED = "-fx-background-color: RED;\n";
+    private static final String BORDER = "-fx-border-color: black;\n"
+                                        + "-fx-border-width: 1;\n"
+                                        + "-fx-border-style: solid;\n";
+
 
 
     @FXML
@@ -65,7 +77,7 @@ public class Controller implements GUIController {
     @FXML
     private TextField genotypeSize;
     @FXML
-    private TextField zValue;
+    private TextField seriesCount;
     @FXML
     private TextField maxGens;
     @FXML
@@ -77,11 +89,15 @@ public class Controller implements GUIController {
     @FXML
     private TextField mutationRate;
     @FXML
-    private TextField kValue;
+    private TextField poisonPenalty;
     @FXML
     private Button runDynamicButton;
     @FXML
     private Button runLastButton;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button stopButton;
 
     private boolean flatlandView = false;
     ImageView[][] imageViews;
@@ -186,25 +202,75 @@ public class Controller implements GUIController {
     }
     @FXML
     public void toggleVisual(){
-        //EA view
+        //graph view
         if(flatlandView) {
             gridContainer.setVisible(false);
             graph.setVisible(true);
             runDynamicButton.setVisible(false);
             runLastButton.setVisible(false);
+            startButton.setVisible(true);
+            stopButton.setVisible(true);
+
         }
-        //flatland view
+        //grid view
         else{
-            if(sim == null)
-                return;
+            /*if(sim == null)
+                return;*/
+            generateGrid();
+            clearGrid();
             gridContainer.setVisible(true);
             graph.setVisible(false);
             runDynamicButton.setVisible(true);
             runLastButton.setVisible(true);
+            startButton.setVisible(false);
+            stopButton.setVisible(false);
 
         }
 
         flatlandView = !flatlandView;
+    }
+
+    private void generateGrid() {
+
+        int height = 0;
+        int width = 0;
+        String image = "";
+        String problem = problemCombo.getSelectionModel().getSelectedItem();
+
+        if(problem.equals("Flatland")){
+            height = 10;
+            width = 10;
+            image = "resources/Empty.png";
+        }
+        else if(problem.equals("Tracker")){
+            height = 15;
+            width = 30;
+            image = "resources/Empty10x10.png";
+        }
+
+
+
+
+        imageViews = new ImageView[width][height];
+        gridContainer.getChildren().clear();
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0;j < height; j++) {
+                ImageView imageView = new ImageView();
+                imageView.setImage(new Image(image));
+                StackPane pane = new StackPane();
+                //pane.setPrefSize(size,size);
+                pane.getChildren().add(imageView);
+                pane.setMargin(imageView, new Insets(5));
+                pane.setStyle("-fx-border-color: black;\n"
+                        + "-fx-border-width: 1;\n"
+                        + "-fx-border-style: solid;\n");
+                StackPane.setAlignment(imageView, Pos.CENTER);
+
+                imageViews[i][j] = imageView;
+                gridContainer.add(pane,i,j);
+            }
+        }
     }
 
     public void updateGrid(int[][] boardData) {
@@ -227,12 +293,38 @@ public class Controller implements GUIController {
 
 }
 
+    @Override
+    public void updateGrid(TrackerBlock tracker, FallingBlock fallingBlock) {
+        Platform.runLater(()-> {
+            clearGrid();
+            fillGrid(tracker,BORDER+RED);
+            fillGrid(fallingBlock,BORDER+BLUE);
+        });
+    }
+
+    private void fillGrid(BlockObject blockObject, String color){
+        for (int i = blockObject.x; i < blockObject.size; i++) {
+            if(i<30)
+                imageViews[blockObject.y][i].setStyle(color);
+            else
+                imageViews[blockObject.y][i - 30].setStyle(color);
+        }
+    }
+
+    private void clearGrid(){
+        for (int i = 0; i < imageViews.length; i++) {
+            for (int j = 0; j < imageViews[i].length; j++) {
+                imageViews[i][j].getParent().setStyle(BORDER+WHITE);
+            }
+        }
+    }
+
     private void saveSettings() {
         Settings.GENOTYPE_SIZE = Integer.parseInt(genotypeSize.getText());
         Settings.CHILD_POOL_SIZE = Integer.parseInt(childPoolSize.getText());
         Settings.ADULT_POOL_SIZE = Integer.parseInt(adultPoolSize.getText());
-        Settings.Z_VALUE = Integer.parseInt(zValue.getText());
-        Settings.K_VALUE = Integer.parseInt(kValue.getText());
+        ann.core.Settings.SERIES_COUNT = Integer.parseInt(seriesCount.getText());
+        ann.core.Settings.POISON_PENALTY = Integer.parseInt(poisonPenalty.getText());
         Settings.EPSILON = Double.parseDouble(epsilon.getText());
         long maxG = Long.parseLong(maxGens.getText());
         Settings.MAX_GENERATIONS = maxG < 0 ? Long.MAX_VALUE : maxG;

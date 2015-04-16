@@ -11,7 +11,9 @@ public class Settings {
     public static int FLATLAND_SIZE = 10;
     public static double FOOD_DISTRIBUTION = 0.333;
     public static double POISON_DISTRIBUTION = 0.333;
-    public static double MOVE_HOLD_THRESHOLD = 0.10;
-    public static final int POISON_PENALTY = 1;
+    public static double NO_ACTION_THRESHOLD = -1.0;
+    public static int POISON_PENALTY = 10;
+    public static int SERIES_COUNT = 5;
+    public static boolean WRAP_AROUND = true;
 
 }
