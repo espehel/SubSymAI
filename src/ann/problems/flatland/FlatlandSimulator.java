@@ -19,11 +19,9 @@ public class FlatlandSimulator extends ProblemSimulator {
     int[] flatlandContent;
     List<int[]> contentSeries;
     int[][] flatland;
-    private Object foodCount;
 
 
     public FlatlandSimulator(){
-        ann = new NeuralNetwork();
         ea = new FlatlandLoop(this);
         flatland = new int[Settings.ann.FLATLAND_SIZE][Settings.ann.FLATLAND_SIZE];
     }
@@ -33,9 +31,9 @@ public class FlatlandSimulator extends ProblemSimulator {
     public void initialize(GUIController gui) {
         this.gui = gui;
         flatlandContent = getNewFlatlandContent();
-        //assumes three layers total and that the middle layer is the average of input and output size
-        //TODO: prøve å ikke ha et hidden layer
-        //ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,(Settings.ann.INPUT_SIZE+Settings.ann.OUTPUT_SIZE)/2,Settings.ann.OUTPUT_SIZE});
+
+        Settings.ann.STEP_COUNT = 60;
+        Settings.ann.CTRNN = false;
         ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,Settings.ann.OUTPUT_SIZE});
         //Settings.ea.REPRESENTATION_SIZE = 32;
         Settings.ea.GENOTYPE_SIZE = ann.totalNetworkWeights;//*Settings.ea.REPRESENTATION_SIZE;
@@ -126,7 +124,7 @@ public class FlatlandSimulator extends ProblemSimulator {
     @Override
     public void runBestAgent() {
         FlatlandPhenotype phenotype = (FlatlandPhenotype) State.bestIndividual;
-        ann.setWeights(phenotype.data);
+        ann.setWeights(phenotype.data,null,null,null);
         generateFlatland();
         phenotype.hardResetAgent();
         gui.updateGrid(flatland);
@@ -140,7 +138,7 @@ public class FlatlandSimulator extends ProblemSimulator {
                 e.printStackTrace();
             }
             double[] input = getInput(phenotype.agent);
-            double[] output = ann.feedInput(input);
+            double[] output = ann.feedInput(input,false);
             //get action from output
             int bestAction = phenotype.getAction(output);
             phenotype.agent.move(bestAction);
@@ -158,7 +156,7 @@ public class FlatlandSimulator extends ProblemSimulator {
     }
 
     public void testFitness(FlatlandPhenotype phenotype) {
-        ann.setWeights(phenotype.data);
+        ann.setWeights(phenotype.data, null,null,null);
         phenotype.maxFood = 0;
         phenotype.hardResetAgent();
 
@@ -170,7 +168,7 @@ public class FlatlandSimulator extends ProblemSimulator {
             for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
                 double[] input = getInput(phenotype.agent);
                 //Print.array("input", input);
-                double[] output = ann.feedInput(input);
+                double[] output = ann.feedInput(input,false);
                 //Print.array("output" , output);
                 //get action from output
                 int bestAction = phenotype.getAction(output);

@@ -15,7 +15,6 @@ public class BlockObject {
         else if(i >= TrackerSimulator.width)
             i -= TrackerSimulator.width;
 
-        //TODO: fix wrap around
         if(i >= x && i <= x+size)
             return true;
         if(x+size >= TrackerSimulator.width)

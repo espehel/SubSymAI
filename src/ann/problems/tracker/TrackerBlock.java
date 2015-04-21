@@ -11,13 +11,13 @@ public class TrackerBlock extends BlockObject{
 
     public TrackerBlock() {
         x=0;
-        y=0;
+        y=TrackerSimulator.height;
         size=5;
     }
 
     public void reset() {
         x=0;
-        y=0;
+        y=TrackerSimulator.height-1;
     }
 
     public int getSensorIndex(int i) {

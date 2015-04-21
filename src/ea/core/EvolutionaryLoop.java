@@ -154,7 +154,7 @@ public abstract class EvolutionaryLoop {
         for (Phenotype child : children){
             if(Math.random()<Settings.MUTATION_RATE){
                 int i = new Random().nextInt(Settings.GENOTYPE_SIZE);
-                child.genotype.geno[i] = ! child.genotype.geno[i];
+                child.genotype.geno[i] = !child.genotype.geno[i];
             }
             child.develop();
         }
@@ -162,7 +162,11 @@ public abstract class EvolutionaryLoop {
 
     private void bitStringMutation(List<Phenotype> children) {
         for (Phenotype child : children){
-            double probability = (1/(double)Settings.GENOTYPE_SIZE)*Settings.MUTATION_RATE;
+            if(Math.random() < Settings.MUTATION_RATE) {
+                child.develop();
+                continue;
+            }
+            double probability = (1/(double)Settings.GENOTYPE_SIZE);
             for (int i = 0; i < Settings.GENOTYPE_SIZE; i++) {
                 if(Math.random()<probability)
                     child.genotype.geno[i] = !child.genotype.geno[i];
@@ -188,7 +192,7 @@ public abstract class EvolutionaryLoop {
         return child;
     }
 
-    private Phenotype onePointCrossover(Phenotype topParent, Phenotype botParent, int crossPoint) {
+    protected Phenotype onePointCrossover(Phenotype topParent, Phenotype botParent, int crossPoint) {
 
         Phenotype child = generatePhenotype();
         boolean[] data = new boolean[Settings.GENOTYPE_SIZE];

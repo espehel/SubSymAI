@@ -1,6 +1,8 @@
 package ann.problems.tracker;
 
+import ann.core.*;
 import ea.core.*;
+import ea.core.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,24 +21,7 @@ public class TrackerLoop extends EvolutionaryLoop {
     @Override
     protected Phenotype onePointPhenoSpecificCrossover(Phenotype topParent, Phenotype botParent, int crossPoint) {
 
-
-
-
-        TrackerPhenotype child = new TrackerPhenotype();
-
-        if(topParent == botParent || Settings.CROSSOVER_RATE < Math.random()) {
-            child.data = ((TrackerPhenotype)topParent).data.clone();
-            child.genotype = new Genotype(null);
-            return child;
-        }
-
-        double[] data = new double[((TrackerPhenotype)topParent).data.length];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = i < crossPoint ? ((TrackerPhenotype)topParent).data[i] : ((TrackerPhenotype)botParent).data[i];
-        }
-        child.data = data;
-        child.genotype = new Genotype(null);
-        return child;
+        return onePointCrossover(topParent, botParent, crossPoint*Settings.REPRESENTATION_SIZE);
     }
 
     @Override

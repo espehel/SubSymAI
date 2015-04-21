@@ -3,7 +3,6 @@ package ann.problems.tracker;
 import ann.problems.ProblemSimulator;
 import ea.core.Phenotype;
 import ea.core.State;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Constants;
 import utils.GUIController;
 import utils.Settings;
@@ -24,21 +23,34 @@ public class TrackerSimulator extends ProblemSimulator {
     Random rnd;
     TrackerLoop ea;
 
+    public TrackerSimulator(){
+        ea = new TrackerLoop(this);
+        tracker = new TrackerBlock();
+        fallingBlock = new FallingBlock();
+    }
+
 
 
     @Override
     public void initialize(GUIController gui) {
+        System.out.println("init");
         rnd = new Random();
         this.gui = gui;
-        //TODO: fix like it is in the project desription
-        ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,(Settings.ann.INPUT_SIZE+Settings.ann.OUTPUT_SIZE)/2,Settings.ann.OUTPUT_SIZE});
-        Settings.ea.REPRESENTATION_SIZE = 32;
-        Settings.ea.GENOTYPE_SIZE = ann.totalNetworkWeights*Settings.ea.REPRESENTATION_SIZE;
+        Settings.ea.OPERATOR_MUTATION = Constants.MUTATION_BIT_STRING;
+        Settings.ann.STEP_COUNT = 600;
+        Settings.ann.INPUT_SIZE = 5;
+        Settings.ann.OUTPUT_SIZE = 2;
+        Settings.ann.CTRNN = true;
+        ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,2,Settings.ann.OUTPUT_SIZE});
+        Settings.ea.REPRESENTATION_SIZE = 8;
+        //addeding timeconstant, gains and biasweight for 4 neruons
+        Settings.ea.GENOTYPE_SIZE = (ann.totalNetworkWeights+(3*4))*Settings.ea.REPRESENTATION_SIZE;
         ea.initialize(gui);
     }
 
     @Override
     public void start() {
+        System.out.println("start");
 
         for (Phenotype phenotype : ea.getPopulation()) {
             testFitness((TrackerPhenotype) phenotype);
@@ -48,47 +60,42 @@ public class TrackerSimulator extends ProblemSimulator {
 
 
         while (!ea.goalAccomplished()) {
+            //System.out.println("step");
 
             ea.step();
+            ea.logState();
             gui.updateGraph(State.bestFitness);
             //ea.testFitness(ea.getPopulation());
-            ea.logState();
             //System.out.println("end of loop");
         }
     }
 
     @Override
     public void runBestAgent() {
+        TrackerPhenotype phenotype = (TrackerPhenotype) State.bestIndividual;
 
-    }
-
-    @Override
-    public void generateNewContent() {
-        throw new NotImplementedException();
-    }
-
-    public void testFitness(TrackerPhenotype phenotype) {
-
-        ann.setWeights(phenotype.data);
-        phenotype.biggerBlocks = 0;
-        phenotype.smallerBlocks  = 0;
+        ann.setWeights(phenotype.getconnectionWeights(), phenotype.getBiasWeights(),phenotype.getGains(),phenotype.getTimeConstants());
         phenotype.crashes = 0;
         phenotype.captures = 0;
+        resetFallingBlock();
+        tracker.reset();
 
-        for (int c = 0; c< Settings.ann.SERIES_COUNT;c++) {
-
-            tracker.reset();
 
             for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
                 double[] input = getInput();
                 //Print.array("input", input);
-                double[] output = ann.feedInput(input);
+                double[] output = ann.feedInput(input,true);
                 //Print.array("output" , output);
                 //get action from output
                 int bestAction = phenotype.getAction(output);
 
                 tracker.move(bestAction,output[bestAction]);
-                //TODO: figure out when tracker should move adn when fallingblock should move when relateing to the visualization
+                gui.updateGrid(tracker, fallingBlock);
+                try {
+                    Thread.sleep(Settings.ea.LOOP_DELAY);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
 
                 fallingBlock.y++;
@@ -101,18 +108,74 @@ public class TrackerSimulator extends ProblemSimulator {
                     else if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
                         phenotype.captures++;
                     }
+                    else if(event == Constants.EVENT_AVOIDANCE)
+                        phenotype.avoided++;
 
-                    fallingBlock = generateNewFallingBlock();
+                    resetFallingBlock();
                 }
             }
-        }
+        System.out.println("crashes: " + phenotype.crashes + ", Captrues: " + phenotype.captures);
+    }
+
+    @Override
+    public void generateNewContent() {
+    }
+
+    public void testFitness(TrackerPhenotype phenotype) {
+        //System.out.println("test fitness");
+
+        ann.setWeights(phenotype.getconnectionWeights(), phenotype.getBiasWeights(),phenotype.getGains(),phenotype.getTimeConstants());
+        phenotype.biggerBlocks = 0;
+        phenotype.smallerBlocks  = 0;
+        phenotype.crashes = 0;
+        phenotype.captures = 0;
+        //tracker = new TrackerBlock();
+
+        //for (int c = 0; c< Settings.ann.SERIES_COUNT;c++) {
+        tracker.reset();
+        resetFallingBlock();
+
+            for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
+                double[] input = getInput();
+                //Print.array("input", input);
+                double[] output = ann.feedInput(input,true);
+                //Print.array("output" , output);
+                //get action from output
+                int bestAction = phenotype.getAction(output);
+
+                tracker.move(bestAction,output[bestAction]);
+
+
+                fallingBlock.y++;
+
+                if(fallingBlock.y == 14){
+
+                    if(fallingBlock.size<4)
+                        phenotype.smallerBlocks++;
+                    else
+                    phenotype.biggerBlocks++;
+
+                    int event = getEvent(fallingBlock,tracker);
+                    if(event != Constants.EVENT_AVOIDANCE && fallingBlock.size>=tracker.size){
+                        phenotype.crashes++;
+                    }
+                    else if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
+                        phenotype.captures++;
+                    }
+                    else if(event == Constants.EVENT_AVOIDANCE)
+                        phenotype.avoided++;
+
+                    resetFallingBlock();
+                }
+            }
+        //}
 
     }
 
-    private FallingBlock generateNewFallingBlock() {
+    private void resetFallingBlock() {
         int x = rnd.nextInt(30);
         int size = rnd.nextInt(6)+1;
-        return new FallingBlock(x,0,size);
+        fallingBlock.reset(x, 0, size);
     }
 
     private int getEvent(FallingBlock fallingBlock, TrackerBlock tracker) {
@@ -144,7 +207,6 @@ public class TrackerSimulator extends ProblemSimulator {
         double[] sensors = new double[tracker.size];
 
         for (int i = 0; i < sensors.length; i++) {
-            //TODO: fix wrap around
             if(fallingBlock.contains(tracker.x + i))
                 sensors[i] = 1d;
         }

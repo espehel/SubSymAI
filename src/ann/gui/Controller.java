@@ -6,6 +6,7 @@ import ann.problems.flatland.FlatlandSimulator;
 import ann.problems.tracker.BlockObject;
 import ann.problems.tracker.FallingBlock;
 import ann.problems.tracker.TrackerBlock;
+import ann.problems.tracker.TrackerSimulator;
 import ea.core.Settings;
 import ea.core.State;
 import javafx.application.Platform;
@@ -27,6 +28,7 @@ import utils.Constants;
 import utils.GUIController;
 
 import javax.management.relation.InvalidRelationTypeException;
+import java.util.Arrays;
 
 
 public class Controller implements GUIController {
@@ -174,12 +176,15 @@ public class Controller implements GUIController {
         reset();
         saveSettings();
         String problem = problemCombo.getSelectionModel().getSelectedItem();
-
+        System.out.println(problem);
         switch (problem){
             case "Flatland" :
                 sim = new FlatlandSimulator();
                 break;
-            default:return;
+            case "Tracker" :
+                sim = new TrackerSimulator();
+                break;
+            default:throw new IllegalStateException();
         }
         sim.initialize(this);
         System.out.println("initialized");
@@ -295,19 +300,35 @@ public class Controller implements GUIController {
 
     @Override
     public void updateGrid(TrackerBlock tracker, FallingBlock fallingBlock) {
+
+        final int[] tCord = new int[]{tracker.x,tracker.y,tracker.size};
+        final int[] fCord = new int[]{fallingBlock.x,fallingBlock.y,fallingBlock.size};
+
         Platform.runLater(()-> {
+            //System.out.println("updates grid");
             clearGrid();
+            //imageViews[13][13].getParent().setStyle(BORDER + RED);
+            //imageViews[24][1].getParent().setStyle(BORDER+BLUE);
             fillGrid(tracker,BORDER+RED);
             fillGrid(fallingBlock,BORDER+BLUE);
         });
     }
 
     private void fillGrid(BlockObject blockObject, String color){
-        for (int i = blockObject.x; i < blockObject.size; i++) {
-            if(i<30)
-                imageViews[blockObject.y][i].setStyle(color);
+        for (int i = blockObject.x; i < blockObject.x+blockObject.size; i++) {
+            if(i < TrackerSimulator.width)
+                imageViews[i][blockObject.y].getParent().setStyle(color);
             else
-                imageViews[blockObject.y][i - 30].setStyle(color);
+                imageViews[i - TrackerSimulator.width][blockObject.y].getParent().setStyle(color);
+        }
+    }
+    private void fillGrid(int[] blockObject, String color){
+        System.out.println(Arrays.toString(blockObject));
+        for (int i = blockObject[0]; i < blockObject[2]; i++) {
+            if(i < TrackerSimulator.width)
+                imageViews[i][blockObject[1]].getParent().setStyle(color);
+            else
+                imageViews[i - TrackerSimulator.width][blockObject[1]].getParent().setStyle(color);
         }
     }
 
