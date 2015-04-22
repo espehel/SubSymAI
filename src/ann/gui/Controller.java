@@ -338,7 +338,7 @@ public class Controller implements GUIController {
         Settings.CHILD_POOL_SIZE = Integer.parseInt(childPoolSize.getText());
         Settings.ADULT_POOL_SIZE = Integer.parseInt(adultPoolSize.getText());
         ann.core.Settings.SERIES_COUNT = Integer.parseInt(seriesCount.getText());
-        ann.core.Settings.POISON_PENALTY = Integer.parseInt(poisonPenalty.getText());
+        ann.core.Settings.POISON_PENALTY = Double.parseDouble(poisonPenalty.getText());
         ann.core.Settings.CRASH_PENALTY = Double.parseDouble(crashPenalty.getText());
         long maxG = Long.parseLong(maxGens.getText());
         Settings.MAX_GENERATIONS = maxG < 0 ? Long.MAX_VALUE : maxG;

@@ -15,7 +15,8 @@ public class AdultSelection {
     public static List<Phenotype> fullGenerationaleReplacement(List<Phenotype> parents, List<Phenotype> children){
         List<Phenotype> survivors = new ArrayList<>();
         survivors.addAll(children);
-        appendElitism(parents,survivors);
+        if(Settings.ELITISM)
+            appendElitism(parents,survivors);
 
         return survivors;
     }
@@ -28,8 +29,8 @@ public class AdultSelection {
                 break;
             survivors.add(children.get(i));
         }
-
-        appendElitism(parents,survivors);
+        if(Settings.ELITISM)
+            appendElitism(parents,survivors);
 
         return survivors;
     }

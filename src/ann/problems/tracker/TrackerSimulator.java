@@ -60,6 +60,7 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private void initNoWrapANN() {
+        Settings.ea.ELITISM = true;
         Settings.ann.INPUT_SIZE = 7;
         Settings.ann.OUTPUT_SIZE = 2;
         TrackerPhenotype.neuronCount = 4;
@@ -68,6 +69,7 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private void initPollWWrapANN() {
+        Settings.ea.ELITISM = true;
         Settings.ann.INPUT_SIZE = 5;
         Settings.ann.OUTPUT_SIZE = 3;
         TrackerPhenotype.neuronCount = 5;
@@ -76,6 +78,7 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private void initWrapANN() {
+        Settings.ea.ELITISM = false;
         Settings.ann.INPUT_SIZE = 5;
         Settings.ann.OUTPUT_SIZE = 2;
         TrackerPhenotype.neuronCount = 4;
@@ -145,7 +148,7 @@ public class TrackerSimulator extends ProblemSimulator {
                 if(fallingBlock.y == 14){
                     int event = getEvent(fallingBlock,tracker);
                     String eText = recordEvent(phenotype,event);
-                    //System.out.println(eText);
+                    System.out.println(eText);
 
                     resetFallingBlock();
                     tracker.polled=false;
@@ -265,11 +268,13 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private double[] getInput() {
+        if(tracker.x == 24)
+            System.out.println();
         double[] sensors;
         if(Settings.ann.SCENARIO == Constants.SCENARIO_NO_WRAP){
             sensors = new double[tracker.size+2];
             sensors[tracker.size] = tracker.x == 0 ? 1 : 0;
-            sensors[tracker.size+1] = (tracker.x == TrackerSimulator.width - tracker.size -1) ? 1 : 0;
+            sensors[tracker.size+1] = (tracker.x == TrackerSimulator.width - tracker.size) ? 1 : 0;
         }else
             sensors = new double[tracker.size];
 

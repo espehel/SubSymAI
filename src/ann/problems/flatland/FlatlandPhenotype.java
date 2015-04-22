@@ -47,7 +47,7 @@ public class FlatlandPhenotype extends ANNPhenotype {
 
     @Override
     public void calculateFitness() {
-        int score = agent.foodCount - (agent.poisonCount*Settings.POISON_PENALTY);
+        int score = agent.foodCount - (agent.poisonCount*(int)Settings.POISON_PENALTY);
         fitness = (double)score/(double)maxFood;
         fitness = fitness>0.0001 ? fitness : 0.0001;
     }

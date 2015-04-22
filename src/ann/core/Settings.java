@@ -16,7 +16,7 @@ public class Settings {
     public static double FOOD_DISTRIBUTION = 0.333;
     public static double POISON_DISTRIBUTION = 0.333;
     public static double NO_ACTION_THRESHOLD = -1.0;
-    public static int POISON_PENALTY = 10;
+    public static double POISON_PENALTY = 10;
     public static int SERIES_COUNT = 5;
     public static boolean WRAP_AROUND = true;
     public static int SCENARIO = Constants.SCENARIO_WRAP;

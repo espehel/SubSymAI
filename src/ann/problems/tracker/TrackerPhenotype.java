@@ -55,14 +55,14 @@ public class TrackerPhenotype extends ANNPhenotype {
         double capScore = (double)captures/(double)smallerBlocks;
         double avoidedScore = (double)avoided/(double)biggerBlocks;
         double crashScore = Math.pow(ann.core.Settings.CRASH_PENALTY,crashes);
-        double missedScore = Math.pow(ann.core.Settings.CRASH_PENALTY,missed);
+        double missedScore = Math.pow(ann.core.Settings.POISON_PENALTY,missed);
 
         switch (ann.core.Settings.SCENARIO){
             case Constants.SCENARIO_NO_WRAP :
                 fitness = capScore*avoidedScore*crashScore*missedScore;
                 break;
             case Constants.SCENARIO_WRAP :
-                fitness = capScore*avoidedScore;
+                fitness = capScore*avoidedScore*crashScore*missedScore;
                 break;
             case Constants.SCENARIO_POLL_W_WRAP :
                 fitness = capScore*avoidedScore*crashScore*missedScore;

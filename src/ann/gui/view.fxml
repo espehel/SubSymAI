@@ -81,7 +81,7 @@
         <TextField fx:id="crashPenalty" text="0.95" GridPane.columnIndex="1" GridPane.rowIndex="13" />
         <Label text="Dynamic:" GridPane.columnIndex="0" GridPane.rowIndex="14" />
         <CheckBox fx:id="dynamic" GridPane.columnIndex="1" GridPane.rowIndex="14" />
-        <Label text="Poison penalty:" GridPane.columnIndex="0" GridPane.rowIndex="15" />
+        <Label text="Poison(miss) penalty:" GridPane.columnIndex="0" GridPane.rowIndex="15" />
         <TextField fx:id="poisonPenalty" text="5" GridPane.columnIndex="1" GridPane.rowIndex="15" />
         <Label text="Agent visualization: " GridPane.columnIndex="0" GridPane.rowIndex="16"></Label>
         <Button fx:id="toggleVisualButton" GridPane.columnIndex="1" GridPane.rowIndex="16" text="Toggle view" onAction="#toggleVisual"/>

@@ -7,6 +7,7 @@ import utils.Constants;
  */
 public class Settings {
 
+    public static boolean ELITISM = false;
     public static boolean RUNNING = false;
     public static int LOOP_DELAY = 40;
     public static int CHILD_POOL_SIZE = 30;

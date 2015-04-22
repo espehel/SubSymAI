@@ -15,11 +15,13 @@ public class BlockObject {
         else if(i >= TrackerSimulator.width)
             i -= TrackerSimulator.width;
 
-        if(i >= x && i <= x+size)
+        //if(i >= x && i <= x+size)
+        if(i >= x && i < x+size)
             return true;
-        if(x+size >= TrackerSimulator.width)
-            return x+size - TrackerSimulator.width >= i;
-
+        //if(x+size >= TrackerSimulator.width)
+        if(x+size-1 >= TrackerSimulator.width)
+            //return x+size - TrackerSimulator.width >= i;
+            return x+size-1 - TrackerSimulator.width >= i;
         return false;
     }
 }

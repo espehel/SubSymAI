@@ -34,6 +34,7 @@ public class FlatlandSimulator extends ProblemSimulator {
 
         Settings.ann.STEP_COUNT = 60;
         Settings.ann.CTRNN = false;
+        Settings.ea.ELITISM=true;
         ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,Settings.ann.OUTPUT_SIZE});
         //Settings.ea.REPRESENTATION_SIZE = 32;
         Settings.ea.GENOTYPE_SIZE = ann.totalNetworkWeights;//*Settings.ea.REPRESENTATION_SIZE;
