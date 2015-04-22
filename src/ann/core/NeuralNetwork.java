@@ -46,7 +46,6 @@ public class NeuralNetwork {
         for (int i = 0; i < layers.length; i++) {
             for (int j = 0; j < layers[i].neurons.length; j++) {
                 totalNetworkWeights +=layers[i].neurons[j].weights.length;
-                totalNetworkWeights += layers[i].neurons[j].neighbourCount;
             }
         }
 

@@ -2,6 +2,7 @@ package ann.problems.tracker;
 
 import ann.problems.ProblemSimulator;
 import com.sun.deploy.security.SessionCertStore;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import ea.core.Phenotype;
 import ea.core.State;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -9,7 +10,11 @@ import utils.Constants;
 import utils.GUIController;
 import utils.Settings;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Created by espen on 14/04/15.
@@ -38,7 +43,7 @@ public class TrackerSimulator extends ProblemSimulator {
         System.out.println("init");
         rnd = new Random();
         this.gui = gui;
-        Settings.ann.SCENARIO = Constants.SCENARIO_NO_WRAP;
+        Settings.ann.SCENARIO = Constants.SCENARIO_WRAP;
         Settings.ea.OPERATOR_MUTATION = Constants.MUTATION_BIT_STRING;
         Settings.ann.STEP_COUNT = 600;
         Settings.ann.CTRNN = true;
@@ -109,7 +114,7 @@ public class TrackerSimulator extends ProblemSimulator {
         phenotype.captures = 0;
         resetFallingBlock();
         tracker.reset();
-
+        NumberFormat formatter = new DecimalFormat("#0.0000");
 
             for (int i = 0; i < Settings.ann.STEP_COUNT; i++) {
                 double[] input = getInput();
@@ -126,7 +131,7 @@ public class TrackerSimulator extends ProblemSimulator {
                 else
                     tracker.move(bestAction,output[bestAction]);
 
-
+                System.out.println(bestAction + ": " + formatter.format(output[bestAction]));
                 gui.updateGrid(tracker, fallingBlock);
                 try {
                     Thread.sleep(Settings.ea.LOOP_DELAY);
@@ -139,18 +144,8 @@ public class TrackerSimulator extends ProblemSimulator {
 
                 if(fallingBlock.y == 14){
                     int event = getEvent(fallingBlock,tracker);
-                    if(event != Constants.EVENT_AVOIDANCE && fallingBlock.size>=tracker.size){
-                        phenotype.crashes++;
-                        System.out.println(i+": CRASH");
-                    }
-                    else if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
-                        phenotype.captures++;
-                        System.out.println(i+": CAPTURE");
-                    }
-                    else if(event == Constants.EVENT_AVOIDANCE && fallingBlock.size >= tracker.size) {
-                        phenotype.avoided++;
-                        System.out.println(i+": AVOID");
-                    }
+                    String eText = recordEvent(phenotype,event);
+                    //System.out.println(eText);
 
                     resetFallingBlock();
                     tracker.polled=false;
@@ -204,21 +199,33 @@ public class TrackerSimulator extends ProblemSimulator {
 
 
                     int event = getEvent(fallingBlock,tracker);
-                    if(event != Constants.EVENT_AVOIDANCE && fallingBlock.size>=tracker.size){
-                        phenotype.crashes++;
-                    }
-                    else if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
-                        phenotype.captures++;
-                    }
-                    else if(event == Constants.EVENT_AVOIDANCE && fallingBlock.size >= tracker.size) {
-                        phenotype.avoided++;
-                    }
+                    recordEvent(phenotype,event);
+
 
                     resetFallingBlock();
                 }
             }
         //}
 
+    }
+
+    public String recordEvent(TrackerPhenotype phenotype, int event){
+        if(event != Constants.EVENT_AVOIDANCE && fallingBlock.size>=tracker.size){
+            phenotype.crashes++;
+            return "CRASH";
+        }
+        if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
+            phenotype.captures++;
+            return "CAPTURE";
+        }
+        if(event == Constants.EVENT_AVOIDANCE && fallingBlock.size >= tracker.size) {
+            phenotype.avoided++;
+            return "AVOID";
+        }if(event != Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size) {
+            phenotype.missed++;
+            return "MISSED";
+        }
+        return "";
     }
 
     private void resetFallingBlock() {
@@ -262,7 +269,7 @@ public class TrackerSimulator extends ProblemSimulator {
         if(Settings.ann.SCENARIO == Constants.SCENARIO_NO_WRAP){
             sensors = new double[tracker.size+2];
             sensors[tracker.size] = tracker.x == 0 ? 1 : 0;
-            sensors[tracker.size+1] = tracker.x+tracker.size == TrackerSimulator.width ? 1 : 0;
+            sensors[tracker.size+1] = (tracker.x == TrackerSimulator.width - tracker.size -1) ? 1 : 0;
         }else
             sensors = new double[tracker.size];
 
@@ -271,6 +278,31 @@ public class TrackerSimulator extends ProblemSimulator {
                 sensors[i] = 1d;
         }
         return sensors;
+    }
+
+    public static void main(String[] args) {
+        Settings.ann.CRASH_PENALTY = 1;
+        Settings.ea.MUTATION_RATE = 0.1;
+        Settings.ea.CROSSOVER_RATE = 0.7;
+
+        TrackerSimulator sim = new TrackerSimulator();
+        sim.initialize(null);
+        sim.ann.setWeights(new double[]{2.65625, 4.2578125, -1.875, -0.3125, 4.6875, -2.4609375, -1.9921875, -0.234375, -1.5625, 4.84375, -0.2734375, -1.8359375, -3.4375, 0.5859375, -3.9453125, 4.8046875, 2.0703125, -2.109375, 3.0078125, -3.203125, 2.4609375, 0.0390625}
+                ,new double[]{-7.265625, -1.1328125, -7.265625, -0.078125}
+                ,new double[]{4.0, 2.59375, 1.1875, 2.859375}
+                ,new double[]{1.73828125, 1.0859375, 1.6015625, 1.0625});
+
+
+        Scanner scanner = new Scanner(System.in);
+        while (true){
+            double[] input = new double[5];
+            for (int i = 0; i < 5; i++) {
+                input[i] = scanner.nextInt();
+            }
+            System.out.println(Arrays.toString(sim.ann.feedInput(input,true)));
+
+        }
+
     }
 
 }

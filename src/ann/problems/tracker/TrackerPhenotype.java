@@ -1,7 +1,9 @@
 package ann.problems.tracker;
 
 import ann.core.ANNPhenotype;
+import ea.core.Settings;
 import utils.Calculate;
+import utils.Constants;
 
 import javax.security.auth.login.CredentialException;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ public class TrackerPhenotype extends ANNPhenotype {
     public double[] connectionWeights;
     public int avoided;
     public static int neuronCount;
+    public int missed;
 
     @Override
     public void develop() {
@@ -47,17 +50,24 @@ public class TrackerPhenotype extends ANNPhenotype {
 
     @Override
     public void calculateFitness() {
-        //double maxScore = smallerBlocks+biggerBlocks;
-        //double score = 0;
-        //score += captures + crashes;
-        //score += avoided;
-        //score -= crashes;
-        //fitness = score/maxScore;
+
 
         double capScore = (double)captures/(double)smallerBlocks;
         double avoidedScore = (double)avoided/(double)biggerBlocks;
-        fitness = capScore*avoidedScore;
+        double crashScore = Math.pow(ann.core.Settings.CRASH_PENALTY,crashes);
+        double missedScore = Math.pow(ann.core.Settings.CRASH_PENALTY,missed);
 
+        switch (ann.core.Settings.SCENARIO){
+            case Constants.SCENARIO_NO_WRAP :
+                fitness = capScore*avoidedScore*crashScore*missedScore;
+                break;
+            case Constants.SCENARIO_WRAP :
+                fitness = capScore*avoidedScore;
+                break;
+            case Constants.SCENARIO_POLL_W_WRAP :
+                fitness = capScore*avoidedScore*crashScore*missedScore;
+                break;
+        }
     }
     public void developTimeConstants(){
         timeConstants = getSubData(0,neuronCount);
@@ -107,6 +117,8 @@ public class TrackerPhenotype extends ANNPhenotype {
     @Override
     public String toString() {
         return "TrackerPhenotype{" +
+                "generation=" + generation +
+                ", fitness=" + fitness +
                 "connectionWeights=" + Arrays.toString(connectionWeights) +
                 ", biasWeights=" + Arrays.toString(biasWeights) +
                 ", gains=" + Arrays.toString(gains) +

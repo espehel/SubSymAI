@@ -7,7 +7,6 @@ import ann.problems.tracker.BlockObject;
 import ann.problems.tracker.FallingBlock;
 import ann.problems.tracker.TrackerBlock;
 import ann.problems.tracker.TrackerSimulator;
-import com.sun.scenario.effect.impl.sw.java.JSWBlend_GREENPeer;
 import ea.core.Settings;
 import ea.core.State;
 import javafx.application.Platform;
@@ -28,7 +27,6 @@ import javafx.scene.layout.*;
 import utils.Constants;
 import utils.GUIController;
 
-import javax.management.relation.InvalidRelationTypeException;
 import java.util.Arrays;
 
 
@@ -83,7 +81,7 @@ public class Controller implements GUIController {
     @FXML
     private TextField maxGens;
     @FXML
-    private TextField epsilon;
+    private TextField crashPenalty;
     @FXML
     private CheckBox dynamic;
     @FXML
@@ -341,7 +339,7 @@ public class Controller implements GUIController {
         Settings.ADULT_POOL_SIZE = Integer.parseInt(adultPoolSize.getText());
         ann.core.Settings.SERIES_COUNT = Integer.parseInt(seriesCount.getText());
         ann.core.Settings.POISON_PENALTY = Integer.parseInt(poisonPenalty.getText());
-        Settings.EPSILON = Double.parseDouble(epsilon.getText());
+        ann.core.Settings.CRASH_PENALTY = Double.parseDouble(crashPenalty.getText());
         long maxG = Long.parseLong(maxGens.getText());
         Settings.MAX_GENERATIONS = maxG < 0 ? Long.MAX_VALUE : maxG;
         ann.core.Settings.DYNAMIC = dynamic.isSelected();

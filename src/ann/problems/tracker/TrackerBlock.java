@@ -42,8 +42,8 @@ public class TrackerBlock extends BlockObject{
         else{
             if (x < 0)
                 x = 0;
-            else if (x+size >=TrackerSimulator.width)
-                x = TrackerSimulator.width-size-1;
+            else if (x > TrackerSimulator.width - size -1)
+                x = TrackerSimulator.width - size - 1;
         }
     }
 

@@ -33,9 +33,9 @@
     </GridPane>
     <GridPane fx:id="controls" GridPane.columnIndex="1" GridPane.rowIndex="0">
         <Label text="Child pool size:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-        <TextField fx:id="childPoolSize" text="300" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <TextField fx:id="childPoolSize" text="200" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         <Label text="Adult pool size:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <TextField fx:id="adultPoolSize" text="300" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextField fx:id="adultPoolSize" text="100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <Label  text="Genotype size(L):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
         <TextField fx:id="genotypeSize" text="20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <Label fx:id="sliderLabel" text="Loopdelay=40" GridPane.columnIndex="0" GridPane.rowIndex="3" />
@@ -56,8 +56,8 @@
         </fx:define>
         <children >
             <RadioButton fx:id="fullRepToggle" onAction="#onAdultSelectionAction" text="Full replacement" toggleGroup="$adultSelectToggler" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-            <RadioButton fx:id="overProdToggle" onAction="#onAdultSelectionAction" text="Over production" toggleGroup="$adultSelectToggler" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-            <RadioButton fx:id="mixedToggle" onAction="#onAdultSelectionAction" text="Generation mixing" toggleGroup="$adultSelectToggler" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+            <RadioButton fx:id="overProdToggle" onAction="#onAdultSelectionAction" text="Over production" toggleGroup="$adultSelectToggler" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+            <RadioButton fx:id="mixedToggle" onAction="#onAdultSelectionAction" text="Generation mixing" toggleGroup="$adultSelectToggler"  GridPane.columnIndex="1" GridPane.rowIndex="7"/>
         </children>
         <ComboBox fx:id="problemCombo" value="Flatland" GridPane.columnIndex="0" GridPane.rowIndex="9">
             <items>
@@ -77,8 +77,8 @@
         <TextField fx:id="crossoverRate" text="0.7" GridPane.columnIndex="1" GridPane.rowIndex="11" />
         <Label text="Max generations:" GridPane.columnIndex="0" GridPane.rowIndex="12" />
         <TextField fx:id="maxGens" text="400" GridPane.columnIndex="1" GridPane.rowIndex="12" />
-        <Label text="Epsilon:" GridPane.columnIndex="0" GridPane.rowIndex="13" />
-        <TextField fx:id="epsilon" text="0.1" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+        <Label text="Crash penalty:" GridPane.columnIndex="0" GridPane.rowIndex="13" />
+        <TextField fx:id="crashPenalty" text="0.95" GridPane.columnIndex="1" GridPane.rowIndex="13" />
         <Label text="Dynamic:" GridPane.columnIndex="0" GridPane.rowIndex="14" />
         <CheckBox fx:id="dynamic" GridPane.columnIndex="1" GridPane.rowIndex="14" />
         <Label text="Poison penalty:" GridPane.columnIndex="0" GridPane.rowIndex="15" />

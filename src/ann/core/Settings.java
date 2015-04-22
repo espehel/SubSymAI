@@ -6,6 +6,7 @@ import utils.Constants;
  * Created by espen on 02/04/15.
  */
 public class Settings {
+    public static double CRASH_PENALTY = 0.95;
     public static int STEP_COUNT = 60;
     public static int INPUT_SIZE = 6;
     public static int OUTPUT_SIZE = 3;
