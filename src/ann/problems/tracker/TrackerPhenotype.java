@@ -20,11 +20,10 @@ public class TrackerPhenotype extends ANNPhenotype {
     public double[] biasWeights;
     public double[] connectionWeights;
     public int avoided;
+    public static int neuronCount;
 
     @Override
     public void develop() {
-
-        //TODO: check the ranges
 
         data = new double[ea.core.Settings.GENOTYPE_SIZE/ea.core.Settings.REPRESENTATION_SIZE];
 
@@ -48,34 +47,38 @@ public class TrackerPhenotype extends ANNPhenotype {
 
     @Override
     public void calculateFitness() {
-        double maxScore = smallerBlocks+biggerBlocks;
-        double score = 0;
-        score += captures + crashes;
+        //double maxScore = smallerBlocks+biggerBlocks;
+        //double score = 0;
+        //score += captures + crashes;
         //score += avoided;
         //score -= crashes;
-        fitness = score/maxScore;
+        //fitness = score/maxScore;
+
+        double capScore = (double)captures/(double)smallerBlocks;
+        double avoidedScore = (double)avoided/(double)biggerBlocks;
+        fitness = capScore*avoidedScore;
 
     }
     public void developTimeConstants(){
-        timeConstants = getSubData(0,4);
+        timeConstants = getSubData(0,neuronCount);
         for (int i = 0; i < timeConstants.length; i++) {
             timeConstants[i] = timeConstants[i] + 1.0;
         }
     }
     public void developGains(){
-        gains = getSubData(4,4);
+        gains = getSubData(neuronCount,neuronCount);
         for (int i = 0; i < gains.length; i++) {
             gains[i] = (gains[i] * 4.0) +1.0;
         }
     }
     public void developBiasWeights(){
-        biasWeights = getSubData(8,4);
+        biasWeights = getSubData(neuronCount*2,neuronCount);
         for (int i = 0; i < biasWeights.length; i++) {
             biasWeights[i] = biasWeights[i] * -10.0;
         }
     }
     public void developConnectionWeights(){
-         connectionWeights = getSubData(12,data.length-12);
+         connectionWeights = getSubData(neuronCount*3,data.length-neuronCount*3);
         for (int i = 0; i < connectionWeights.length; i++) {
             connectionWeights[i] = (connectionWeights[i] * 10.0) - 5.0;
         }
@@ -89,9 +92,7 @@ public class TrackerPhenotype extends ANNPhenotype {
     public double[] getBiasWeights(){
         return biasWeights;
     }
-    /*public double[] getconnectionWeights(int weigtCount){
-        return getSubData(12,weigtCount);
-    }*/
+
     public double[] getconnectionWeights(){
         return connectionWeights;
     }

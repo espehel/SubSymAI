@@ -20,7 +20,6 @@ public class TrackerLoop extends EvolutionaryLoop {
 
     @Override
     protected Phenotype onePointPhenoSpecificCrossover(Phenotype topParent, Phenotype botParent, int crossPoint) {
-
         return onePointCrossover(topParent, botParent, crossPoint*Settings.REPRESENTATION_SIZE);
     }
 

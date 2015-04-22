@@ -1,5 +1,7 @@
 package ann.core;
 
+import utils.Constants;
+
 /**
  * Created by espen on 02/04/15.
  */
@@ -16,5 +18,6 @@ public class Settings {
     public static int POISON_PENALTY = 10;
     public static int SERIES_COUNT = 5;
     public static boolean WRAP_AROUND = true;
+    public static int SCENARIO = Constants.SCENARIO_WRAP;
 
 }

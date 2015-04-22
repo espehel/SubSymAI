@@ -1,7 +1,5 @@
 package ann.problems.tracker;
 
-import ann.core.ANNPhenotype;
-import ea.core.Settings;
 import utils.Constants;
 
 /**
@@ -9,10 +7,13 @@ import utils.Constants;
  */
 public class TrackerBlock extends BlockObject{
 
+    public boolean polled;
+
     public TrackerBlock() {
         x=0;
         y=TrackerSimulator.height;
         size=5;
+        polled = false;
     }
 
     public void reset() {
@@ -25,30 +26,30 @@ public class TrackerBlock extends BlockObject{
     }
 
     public void move(int action, double magnitude) {
-        //TODO: fix wrap around
         int speed = 0;
-        if(action == Constants.STRAFE_LEFT)
+        if(action == Constants.TRACKER_STRAFE_LEFT)
             speed = -1 * getMagnitude(magnitude);
-        if(action == Constants.STRAFE_RIGHT)
+        if(action == Constants.TRACKER_STRAFE_RIGHT)
             speed = 1 * getMagnitude(magnitude);
 
         x += speed;
         if(ann.core.Settings.WRAP_AROUND) {
             if (x < 0)
-                x += 30;
-            else if (x >=30)
-                x-=30;
+                x += TrackerSimulator.width;
+            else if (x >=TrackerSimulator.width)
+                x-=TrackerSimulator.width;
         }
         else{
             if (x < 0)
                 x = 0;
-            else if (x >=30)
-                x = 29;
+            else if (x+size >=TrackerSimulator.width)
+                x = TrackerSimulator.width-size-1;
         }
     }
 
     public int getMagnitude(double magnitude) {
 
+        //TODO: this can be tweaked
         if(magnitude<0.0)
             return 0;
         if(magnitude<0.25)

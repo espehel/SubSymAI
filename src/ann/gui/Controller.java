@@ -7,6 +7,7 @@ import ann.problems.tracker.BlockObject;
 import ann.problems.tracker.FallingBlock;
 import ann.problems.tracker.TrackerBlock;
 import ann.problems.tracker.TrackerSimulator;
+import com.sun.scenario.effect.impl.sw.java.JSWBlend_GREENPeer;
 import ea.core.Settings;
 import ea.core.State;
 import javafx.application.Platform;
@@ -35,12 +36,11 @@ public class Controller implements GUIController {
 
     private static final String WHITE = "-fx-background-color: WHITE;\n";
     private static final String BLUE = "-fx-background-color: BLUE;\n";
-
+    private static final String GREEN = "-fx-background-color: GREEN;\n";
     private static final String RED = "-fx-background-color: RED;\n";
     private static final String BORDER = "-fx-border-color: black;\n"
                                         + "-fx-border-width: 1;\n"
                                         + "-fx-border-style: solid;\n";
-
 
 
     @FXML
@@ -301,15 +301,10 @@ public class Controller implements GUIController {
     @Override
     public void updateGrid(TrackerBlock tracker, FallingBlock fallingBlock) {
 
-        final int[] tCord = new int[]{tracker.x,tracker.y,tracker.size};
-        final int[] fCord = new int[]{fallingBlock.x,fallingBlock.y,fallingBlock.size};
-
         Platform.runLater(()-> {
-            //System.out.println("updates grid");
             clearGrid();
-            //imageViews[13][13].getParent().setStyle(BORDER + RED);
-            //imageViews[24][1].getParent().setStyle(BORDER+BLUE);
-            fillGrid(tracker,BORDER+RED);
+            String trackerColor = tracker.polled ? GREEN : RED;
+            fillGrid(tracker,BORDER+trackerColor);
             fillGrid(fallingBlock,BORDER+BLUE);
         });
     }

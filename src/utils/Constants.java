@@ -17,10 +17,14 @@ public class Constants {
     public static final int MOVE_LEFT = 1;
     public static final int MOVE_RIGHT = 2;
     public static final int NO_ACTION = -1;
-    public static final int STRAFE_LEFT = 0;
-    public static final int STRAFE_RIGHT = 1;
+    public static final int TRACKER_STRAFE_LEFT = 0;
+    public static final int TRACKER_STRAFE_RIGHT = 1;
+    public static final int TRACKER_POLL = 2;
     public static final int EVENT_NONE = 0;
     public static final int EVENT_CAPTURE = 1;
     public static final int EVENT_AVOIDANCE = 2;
+    public static final int SCENARIO_WRAP = 1;
+    public static final int SCENARIO_NO_WRAP = 2;
+    public static final int SCENARIO_POLL_W_WRAP = 3;
 
 }

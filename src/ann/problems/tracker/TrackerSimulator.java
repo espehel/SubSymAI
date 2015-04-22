@@ -1,8 +1,10 @@
 package ann.problems.tracker;
 
 import ann.problems.ProblemSimulator;
+import com.sun.deploy.security.SessionCertStore;
 import ea.core.Phenotype;
 import ea.core.State;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.Constants;
 import utils.GUIController;
 import utils.Settings;
@@ -36,16 +38,44 @@ public class TrackerSimulator extends ProblemSimulator {
         System.out.println("init");
         rnd = new Random();
         this.gui = gui;
+        Settings.ann.SCENARIO = Constants.SCENARIO_NO_WRAP;
         Settings.ea.OPERATOR_MUTATION = Constants.MUTATION_BIT_STRING;
         Settings.ann.STEP_COUNT = 600;
+        Settings.ann.CTRNN = true;
+
+        switch (Settings.ann.SCENARIO){
+            case Constants.SCENARIO_NO_WRAP : initNoWrapANN(); break;
+            case Constants.SCENARIO_WRAP : initWrapANN(); break;
+            case Constants.SCENARIO_POLL_W_WRAP : initPollWWrapANN(); break;
+        }
+        Settings.ea.REPRESENTATION_SIZE = 8;
+        //addeding timeconstant, gains and biasweight for the number of neurons with weights neruons
+        Settings.ea.GENOTYPE_SIZE = (ann.totalNetworkWeights+(3*TrackerPhenotype.neuronCount))*Settings.ea.REPRESENTATION_SIZE;
+        ea.initialize(gui);
+    }
+
+    private void initNoWrapANN() {
+        Settings.ann.INPUT_SIZE = 7;
+        Settings.ann.OUTPUT_SIZE = 2;
+        TrackerPhenotype.neuronCount = 4;
+        Settings.ann.WRAP_AROUND = false;
+        ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,2,Settings.ann.OUTPUT_SIZE});
+    }
+
+    private void initPollWWrapANN() {
+        Settings.ann.INPUT_SIZE = 5;
+        Settings.ann.OUTPUT_SIZE = 3;
+        TrackerPhenotype.neuronCount = 5;
+        Settings.ann.WRAP_AROUND = true;
+        ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,2,Settings.ann.OUTPUT_SIZE});
+    }
+
+    private void initWrapANN() {
         Settings.ann.INPUT_SIZE = 5;
         Settings.ann.OUTPUT_SIZE = 2;
-        Settings.ann.CTRNN = true;
+        TrackerPhenotype.neuronCount = 4;
+        Settings.ann.WRAP_AROUND = true;
         ann.buildNetwork(new int[]{Settings.ann.INPUT_SIZE,2,Settings.ann.OUTPUT_SIZE});
-        Settings.ea.REPRESENTATION_SIZE = 8;
-        //addeding timeconstant, gains and biasweight for 4 neruons
-        Settings.ea.GENOTYPE_SIZE = (ann.totalNetworkWeights+(3*4))*Settings.ea.REPRESENTATION_SIZE;
-        ea.initialize(gui);
     }
 
     @Override
@@ -89,7 +119,14 @@ public class TrackerSimulator extends ProblemSimulator {
                 //get action from output
                 int bestAction = phenotype.getAction(output);
 
-                tracker.move(bestAction,output[bestAction]);
+                if(bestAction == Constants.TRACKER_POLL){
+                    fallingBlock.y=13;
+                    tracker.polled=true;
+                }
+                else
+                    tracker.move(bestAction,output[bestAction]);
+
+
                 gui.updateGrid(tracker, fallingBlock);
                 try {
                     Thread.sleep(Settings.ea.LOOP_DELAY);
@@ -104,14 +141,19 @@ public class TrackerSimulator extends ProblemSimulator {
                     int event = getEvent(fallingBlock,tracker);
                     if(event != Constants.EVENT_AVOIDANCE && fallingBlock.size>=tracker.size){
                         phenotype.crashes++;
+                        System.out.println(i+": CRASH");
                     }
                     else if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
                         phenotype.captures++;
+                        System.out.println(i+": CAPTURE");
                     }
-                    else if(event == Constants.EVENT_AVOIDANCE)
+                    else if(event == Constants.EVENT_AVOIDANCE && fallingBlock.size >= tracker.size) {
                         phenotype.avoided++;
+                        System.out.println(i+": AVOID");
+                    }
 
                     resetFallingBlock();
+                    tracker.polled=false;
                 }
             }
         System.out.println("crashes: " + phenotype.crashes + ", Captrues: " + phenotype.captures);
@@ -143,7 +185,12 @@ public class TrackerSimulator extends ProblemSimulator {
                 //get action from output
                 int bestAction = phenotype.getAction(output);
 
-                tracker.move(bestAction,output[bestAction]);
+                if(bestAction == Constants.TRACKER_POLL){
+                    fallingBlock.y = 13;
+                }
+                //TODO: tweak magnitude limits
+                else
+                    tracker.move(bestAction,output[bestAction]);
 
 
                 fallingBlock.y++;
@@ -153,7 +200,8 @@ public class TrackerSimulator extends ProblemSimulator {
                     if(fallingBlock.size<4)
                         phenotype.smallerBlocks++;
                     else
-                    phenotype.biggerBlocks++;
+                        phenotype.biggerBlocks++;
+
 
                     int event = getEvent(fallingBlock,tracker);
                     if(event != Constants.EVENT_AVOIDANCE && fallingBlock.size>=tracker.size){
@@ -162,8 +210,9 @@ public class TrackerSimulator extends ProblemSimulator {
                     else if(event == Constants.EVENT_CAPTURE && fallingBlock.size < tracker.size){
                         phenotype.captures++;
                     }
-                    else if(event == Constants.EVENT_AVOIDANCE)
+                    else if(event == Constants.EVENT_AVOIDANCE && fallingBlock.size >= tracker.size) {
                         phenotype.avoided++;
+                    }
 
                     resetFallingBlock();
                 }
@@ -173,8 +222,13 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private void resetFallingBlock() {
-        int x = rnd.nextInt(30);
         int size = rnd.nextInt(6)+1;
+        int x;
+        if(Settings.ann.WRAP_AROUND)
+            x = rnd.nextInt(TrackerSimulator.width);
+        else
+            x = rnd.nextInt(TrackerSimulator.width-size);
+
         fallingBlock.reset(x, 0, size);
     }
 
@@ -204,9 +258,15 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private double[] getInput() {
-        double[] sensors = new double[tracker.size];
+        double[] sensors;
+        if(Settings.ann.SCENARIO == Constants.SCENARIO_NO_WRAP){
+            sensors = new double[tracker.size+2];
+            sensors[tracker.size] = tracker.x == 0 ? 1 : 0;
+            sensors[tracker.size+1] = tracker.x+tracker.size == TrackerSimulator.width ? 1 : 0;
+        }else
+            sensors = new double[tracker.size];
 
-        for (int i = 0; i < sensors.length; i++) {
+        for (int i = 0; i < tracker.size; i++) {
             if(fallingBlock.contains(tracker.x + i))
                 sensors[i] = 1d;
         }

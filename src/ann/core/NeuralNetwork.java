@@ -1,8 +1,5 @@
 package ann.core;
 
-import ea.core.*;
-import utils.Calculate;
-
 /**
  * Created by espen on 01/04/15.
  */
@@ -11,11 +8,11 @@ public class NeuralNetwork {
     NeuronLayer[] layers;
     double[] weights;
     public int totalNetworkWeights;
-    public Neuron biasNeuron;
+    //public Neuron biasNeuron;
 
-    public NeuralNetwork(int[] layerSizes, boolean biasNode) {
+    /*public NeuralNetwork(int[] layerSizes, boolean biasNode) {
         buildNetwork(layerSizes);
-    }
+    }*/
     public NeuralNetwork(){
 
     }
@@ -29,8 +26,17 @@ public class NeuralNetwork {
             layer.neurons = new Neuron[layerSizes[i]];
             //creates the units
             for (int j = 0; j < layerSizes[i]; j++) {
-                //the first layer will have no inputweights, so the array will become null
-                Neuron neuron = new Neuron(generateRandomWeights(i==0?0:layerSizes[i-1]),0.0);
+                int connections;
+                int neighbours;
+                if(i == 0) {
+                    connections = 0;
+                    neighbours = 0;
+                }else {
+                    connections =layerSizes[i-1];
+                    neighbours = layerSizes[i] - 1;
+                }
+                Neuron neuron = new Neuron(generateWeights(connections,neighbours),0.0);
+                neuron.neighbourCount = neighbours;
                 layer.neurons[j] = neuron;
             }
             layers[i] = layer;
@@ -40,17 +46,20 @@ public class NeuralNetwork {
         for (int i = 0; i < layers.length; i++) {
             for (int j = 0; j < layers[i].neurons.length; j++) {
                 totalNetworkWeights +=layers[i].neurons[j].weights.length;
+                totalNetworkWeights += layers[i].neurons[j].neighbourCount;
             }
         }
 
-        biasNeuron = new Neuron(new double[totalNetworkWeights],0.0);
+        //biasNeuron = new Neuron(new double[totalNetworkWeights],0.0);
     }
 
-    private double[] generateRandomWeights(int inputSize) {
+    private double[] generateWeights(int inputSize, int neighbourCount) {
+
         if(inputSize == 0)
             return new double[0];
+
         if(Settings.CTRNN)
-            inputSize +=2;
+            inputSize +=neighbourCount + 1;//adds for all neigbours and one for itself
         double[] weights = new double[inputSize];
         /*for (int i = 0; i <inputSize; i++) {
             weights[i] = Math.random()-Math.random();
@@ -91,29 +100,39 @@ public class NeuralNetwork {
         for (int i = 1; i < layers.length; i++) {
 
             if(i > 1)
-                input = output;
+                input = output.clone();
 
             int layerSize = layers[i].neurons.length;
 
             output = new double[layerSize];
-
+            //System.out.println();
             //for each neuron j in the layer i
             for (int j = 0; j < layerSize; j++) {
 
-                double neighbourActivations = 0;
+                double[] neighbourActivations = new double[layerSize-1];
+                int offset = 0;
                 for (int k = 0; k < layerSize; k++) {
-                    if(k!=j)
-                        neighbourActivations += layers[i].neurons[k].lastActivation;
+                    if(k==j) {
+                        offset++;
+                        continue;
+                    }
+                    neighbourActivations[k-offset] += layers[i].neurons[k].lastActivation;
                 }
 
                 Neuron neuron = layers[i].neurons[j];
-                double activation = neuron.activate(input,bias,neighbourActivations);
-                output[j] = Calculate.sigmoid(activation*neuron.gain);
-                neuron.newActivation = output[j];
+                double activation = neuron.activate(input,neighbourActivations);
+                //double out = Calculate.sigmoid(activation,neuron.gain);
+                output[j] = activation;
+                //neuron.lastActivation = activation;
+                //neuron.addDerivative();
+                /*if(i == 1 && j ==1)
+                    System.out.println(neuron.internalState);*/
                 //Print.array("sigmoid" , output);
             }
+            //System.out.println();
+            //add last activation
             for (int j = 0; j < layerSize; j++) {
-                layers[i].neurons[j].lastActivation = layers[i].neurons[j].newActivation;
+                layers[i].neurons[j].lastActivation = output[j];
             }
         }
 
