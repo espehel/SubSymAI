@@ -43,6 +43,13 @@ public class TrackerPhenotype extends ANNPhenotype {
         developGains();
     }
 
+    public void phenoDevelop(){
+        developTimeConstants();
+        developBiasWeights();
+        developConnectionWeights();
+        developGains();
+    }
+
     @Override
     protected String getDataString() {
         return null;

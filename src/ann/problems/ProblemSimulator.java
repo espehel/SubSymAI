@@ -9,7 +9,7 @@ import utils.GUIController;
  */
 public abstract class ProblemSimulator {
 
-    protected NeuralNetwork ann;
+    public NeuralNetwork ann;
     public GUIController gui;
 
     public ProblemSimulator(){

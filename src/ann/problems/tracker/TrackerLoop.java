@@ -1,6 +1,7 @@
 package ann.problems.tracker;
 
 import ann.core.*;
+import ann.problems.flatland.FlatlandPhenotype;
 import ea.core.*;
 import ea.core.Settings;
 
@@ -20,7 +21,25 @@ public class TrackerLoop extends EvolutionaryLoop {
 
     @Override
     protected Phenotype onePointPhenoSpecificCrossover(Phenotype topParent, Phenotype botParent, int crossPoint) {
-        return onePointCrossover(topParent, botParent, crossPoint*Settings.REPRESENTATION_SIZE);
+        //return onePointCrossover(topParent, botParent, crossPoint*Settings.REPRESENTATION_SIZE);
+
+        TrackerPhenotype child = new TrackerPhenotype();
+
+
+        if(topParent == botParent || Settings.CROSSOVER_RATE < Math.random()) {
+            child.data = ((TrackerPhenotype)topParent).data.clone();
+            child.genotype = new Genotype(null);
+            return child;
+        }
+
+        double[] data = new double[((TrackerPhenotype)topParent).data.length];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = i < crossPoint ? ((TrackerPhenotype)topParent).data[i] : ((TrackerPhenotype)botParent).data[i];
+        }
+        child.data = data;
+        child.genotype = new Genotype(null);
+        //child.phenoDevelop();
+        return child;
     }
 
     @Override
@@ -31,8 +50,12 @@ public class TrackerLoop extends EvolutionaryLoop {
             for (int i = 0; i < child.data.length; i++) {
                 if(Math.random() < Settings.MUTATION_RATE)
                     child.data[i] += (Math.random()-Math.random())*0.3;
+                    if(child.data[i]>1)
+                        child.data[i] = 1;
+                    else if(child.data[i]<0)
+                        child.data[i] =0;
             }
-
+            child.phenoDevelop();
         }
 
     }

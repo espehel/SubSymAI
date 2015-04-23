@@ -87,6 +87,13 @@
         <Button fx:id="toggleVisualButton" GridPane.columnIndex="1" GridPane.rowIndex="16" text="Toggle view" onAction="#toggleVisual"/>
         <Button fx:id="runDynamicButton" GridPane.columnIndex="0" GridPane.rowIndex="17" text="Run Dynamic" onAction="#runDynamic" visible="false"/>
         <Button fx:id="runLastButton" GridPane.columnIndex="1" GridPane.rowIndex="17" text="Run Last" onAction="#runLast" visible="false"/>
-
+        <fx:define>
+            <ToggleGroup fx:id="scenarioSelectToggler"/>
+        </fx:define>
+        <children >
+        <RadioButton fx:id="wrapToggle" onAction="#onScenarioSelectAction" text="Wrap" toggleGroup="$scenarioSelectToggler" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
+        <RadioButton fx:id="noWrapToggle" onAction="#onScenarioSelectAction" text="No wrap" toggleGroup="$scenarioSelectToggler"  GridPane.columnIndex="0" GridPane.rowIndex="19"/>
+        <RadioButton fx:id="pollWWrapToggle" onAction="#onScenarioSelectAction" text="Poll and wrap" toggleGroup="$scenarioSelectToggler"  GridPane.columnIndex="0" GridPane.rowIndex="20"/>
+        </children>
     </GridPane>
 </GridPane>

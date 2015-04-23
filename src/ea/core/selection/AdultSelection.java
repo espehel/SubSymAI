@@ -15,9 +15,9 @@ public class AdultSelection {
     public static List<Phenotype> fullGenerationaleReplacement(List<Phenotype> parents, List<Phenotype> children){
         List<Phenotype> survivors = new ArrayList<>();
         survivors.addAll(children);
-        if(Settings.ELITISM)
+        /*if(Settings.ELITISM)
             appendElitism(parents,survivors);
-
+*/
         return survivors;
     }
     public static List<Phenotype> overProduction(List<Phenotype> parents, List<Phenotype> children){
@@ -29,9 +29,9 @@ public class AdultSelection {
                 break;
             survivors.add(children.get(i));
         }
-        if(Settings.ELITISM)
+        /*if(Settings.ELITISM)
             appendElitism(parents,survivors);
-
+*/
         return survivors;
     }
     public static List<Phenotype> GenerationalMixing(List<Phenotype> parents, List<Phenotype> children){

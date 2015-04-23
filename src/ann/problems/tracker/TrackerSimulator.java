@@ -43,8 +43,8 @@ public class TrackerSimulator extends ProblemSimulator {
         System.out.println("init");
         rnd = new Random();
         this.gui = gui;
-        Settings.ann.SCENARIO = Constants.SCENARIO_WRAP;
-        Settings.ea.OPERATOR_MUTATION = Constants.MUTATION_BIT_STRING;
+        //Settings.ann.SCENARIO = Constants.SCENARIO_NO_WRAP;
+        Settings.ea.OPERATOR_MUTATION = Constants.MUTATION_PHENOSPECIFIC;
         Settings.ann.STEP_COUNT = 600;
         Settings.ann.CTRNN = true;
 
@@ -78,7 +78,7 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private void initWrapANN() {
-        Settings.ea.ELITISM = false;
+        Settings.ea.ELITISM = true;
         Settings.ann.INPUT_SIZE = 5;
         Settings.ann.OUTPUT_SIZE = 2;
         TrackerPhenotype.neuronCount = 4;
@@ -97,7 +97,7 @@ public class TrackerSimulator extends ProblemSimulator {
         }
 
 
-        while (!ea.goalAccomplished()) {
+        while (!ea.goalAccomplished() && Settings.ea.RUNNING) {
             //System.out.println("step");
 
             ea.step();
@@ -169,6 +169,8 @@ public class TrackerSimulator extends ProblemSimulator {
         phenotype.smallerBlocks  = 0;
         phenotype.crashes = 0;
         phenotype.captures = 0;
+        phenotype.avoided = 0;
+        phenotype.missed = 0;
         //tracker = new TrackerBlock();
 
         //for (int c = 0; c< Settings.ann.SERIES_COUNT;c++) {
@@ -268,8 +270,6 @@ public class TrackerSimulator extends ProblemSimulator {
     }
 
     private double[] getInput() {
-        if(tracker.x == 24)
-            System.out.println();
         double[] sensors;
         if(Settings.ann.SCENARIO == Constants.SCENARIO_NO_WRAP){
             sensors = new double[tracker.size+2];

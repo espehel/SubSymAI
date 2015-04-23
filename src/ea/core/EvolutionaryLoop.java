@@ -7,6 +7,7 @@ import utils.Constants;
 import utils.GUIController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -37,6 +38,8 @@ public abstract class EvolutionaryLoop {
             //System.out.println("1: "+matingPool.size());
             children = reproduction(matingPool);
             //System.out.println("2: "+children.size());
+            if(Settings.ELITISM)
+                appendElitism(children);
             testFitness(children);
             population = performAdultSelection(population, children);
             //System.out.println("3: "+population.size());
@@ -59,13 +62,16 @@ public abstract class EvolutionaryLoop {
         List<MatingPartners> matingPool;
         List<Phenotype> children;
 
-            matingPool = performParentSelection();
-            //System.out.println("1: "+matingPool.size());
-            children = reproduction(matingPool);
-            //System.out.println("2: "+children.size());
-            testFitness(children);
-            population = performAdultSelection(population, children);
-            //System.out.println("3: "+population.size());
+        matingPool = performParentSelection();
+        //System.out.println("1: "+matingPool.size());
+        children = reproduction(matingPool);
+        //System.out.println("2: "+children.size());
+        if(Settings.ELITISM)
+            appendElitism(children);
+
+        testFitness(children);
+        population = performAdultSelection(population, children);
+        //System.out.println("3: "+population.size());
 
         return goalAccomplished();
     }
@@ -88,6 +94,13 @@ public abstract class EvolutionaryLoop {
         State.bestIndividual = bestPhenom;
 
         System.out.println(State.log());
+    }
+
+    private void appendElitism(List<Phenotype> children){
+        Collections.sort(population);
+        for (int i = 0; i < Settings.ELITISM_COUNT; i++) {
+            children.add(population.get(i));
+        }
     }
 
     private List<Phenotype> reproduction(List<MatingPartners> matingPool) {
@@ -162,7 +175,7 @@ public abstract class EvolutionaryLoop {
 
     private void bitStringMutation(List<Phenotype> children) {
         for (Phenotype child : children){
-            if(Math.random() < Settings.MUTATION_RATE) {
+            if(Math.random() > Settings.MUTATION_RATE) {
                 child.develop();
                 continue;
             }

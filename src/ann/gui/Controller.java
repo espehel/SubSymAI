@@ -65,6 +65,12 @@ public class Controller implements GUIController {
     @FXML
     private RadioButton mixedToggle;
     @FXML
+    private RadioButton wrapToggle;
+    @FXML
+    private RadioButton noWrapToggle;
+    @FXML
+    private RadioButton pollWWrapToggle;
+    @FXML
     private ComboBox<String> problemCombo;
     @FXML
     private Slider loopDelaySlider;
@@ -161,12 +167,23 @@ public class Controller implements GUIController {
         Settings.PARENT_SELECTION_BOLTZMANN = boltzmannToggle.isSelected();
         Settings.PARENT_SELECTION_SIGMASCALING = sigmaScaleToggle.isSelected();
         Settings.PARENT_SELECTION_TOURNAMENT = tournamentToggle.isSelected();
+
     }
     @FXML
     public void onAdultSelectionAction(){
         Settings.ADULT_SELECTION_FULLREPLACEMENT = fullRepToggle.isSelected();
         Settings.ADULT_SELECTION_GENERATIONMIXING = mixedToggle.isSelected();
         Settings.ADULT_SELECTION_OVERPRODUCTION = overProdToggle.isSelected();
+
+    }
+    @FXML
+    public void onScenarioSelectAction(){
+        if(wrapToggle.isSelected())
+            ann.core.Settings.SCENARIO = Constants.SCENARIO_WRAP;
+        else if(noWrapToggle.isSelected())
+            ann.core.Settings.SCENARIO = Constants.SCENARIO_NO_WRAP;
+        else if(pollWWrapToggle.isSelected())
+            ann.core.Settings.SCENARIO = Constants.SCENARIO_POLL_W_WRAP;
 
     }
     @FXML
