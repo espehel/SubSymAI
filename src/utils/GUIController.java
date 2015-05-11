@@ -9,7 +9,7 @@ import ann.problems.tracker.TrackerBlock;
  */
 public interface GUIController {
     public void updateGraph(double bestFitness);
-    public void updateGrid(Agent agent);
+    public void updateGrid(AbstractAgent agent);
     public void updateGrid(int[][] board);
     public void updateGrid(TrackerBlock tracker,FallingBlock fallingBlock);
 

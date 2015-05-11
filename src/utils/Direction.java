@@ -35,6 +35,17 @@ public enum Direction {
         return null;
     }
 
+    public static Direction getRandom(){
+        double d = Math.random();
+        if(d<0.25)
+            return NORTH;
+        if(d<0.5)
+            return EAST;
+        if(d<0.75)
+            return SOUTH;
+        return WEST;
+    }
+
     @Override
     public String toString() {
         switch (this){
@@ -45,4 +56,5 @@ public enum Direction {
         }
         return null;
     }
+
 }

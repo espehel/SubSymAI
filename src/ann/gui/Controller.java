@@ -15,6 +15,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,9 +25,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
+import utils.AbstractAgent;
 import utils.Constants;
 import utils.GUIController;
 
+import java.io.File;
 import java.util.Arrays;
 
 
@@ -380,7 +384,7 @@ public class Controller implements GUIController {
     }
 
     @Override
-    public void updateGrid(Agent agent) {
+    public void updateGrid(AbstractAgent agent) {
         Platform.runLater(()->{
             if(lastPos[0] != -1){
             imageViews[lastPos[0]][lastPos[1]].setImage(new Image("resources/Empty.png"));

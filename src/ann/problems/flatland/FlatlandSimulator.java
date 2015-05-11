@@ -52,7 +52,7 @@ public class FlatlandSimulator extends ProblemSimulator {
     private int[] getNewFlatlandContent() {
         int[] flatlandContent = new int[Settings.ann.FLATLAND_SIZE*Settings.ann.FLATLAND_SIZE];
 
-        //index 0 is where the agent starts
+        //index 0 is where the startPosition starts
         flatlandContent[0] = Constants.FLATLAND_CELLTYPE_EMPTY;
         for (int i = 1; i < flatlandContent.length; i++) {
             if(Math.random()<= Settings.ann.FOOD_DISTRIBUTION){

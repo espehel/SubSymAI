@@ -13,6 +13,8 @@ public class Settings {
     public static boolean CTRNN = false;
     public static boolean DYNAMIC = false;
     public static int FLATLAND_SIZE = 10;
+    public static int FLATLAND_WIDTH = 10;
+    public static int FLATLAND_HEIGHT = 10;
     public static double FOOD_DISTRIBUTION = 0.333;
     public static double POISON_DISTRIBUTION = 0.333;
     public static double NO_ACTION_THRESHOLD = -1.0;

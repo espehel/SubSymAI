@@ -53,14 +53,14 @@ public class FlatlandPhenotype extends ANNPhenotype {
     }
 
     /**
-     * creates a completly fresh new instance of the agent for this pheotype
+     * creates a completly fresh new instance of the startPosition for this pheotype
      */
     public void hardResetAgent() {
         agent = new Agent();
     }
 
     /**
-     * creates a new agent instance for this phenotype, but keeps the food and poisoncount from the old instance.
+     * creates a new startPosition instance for this phenotype, but keeps the food and poisoncount from the old instance.
      */
     public void softResetAgent(){
         agent = new Agent(agent.foodCount,agent.poisonCount);

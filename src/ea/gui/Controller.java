@@ -22,6 +22,7 @@ import javafx.scene.control.TextField;
 import ea.problems.lolzprefix.LOLZPrefixLoop;
 import ea.problems.onemax.OneMaxLoop;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import utils.AbstractAgent;
 import utils.GUIController;
 
 
@@ -189,7 +190,7 @@ public class Controller implements GUIController{
     }
 
     @Override
-    public void updateGrid(Agent agent) {
+    public void updateGrid(AbstractAgent agent) {
         throw new NotImplementedException();
     }
 
