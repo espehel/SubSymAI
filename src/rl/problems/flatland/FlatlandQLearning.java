@@ -48,14 +48,14 @@ public class FlatlandQLearning extends QLearning {
     protected double getReward() {
         if(cellContent==-1){
             agent.poisonCount++;
-            return -1d;
+            return -2d;
         }
         if(cellContent>0){
             agent.foodCount++;
             return 1d;
         }
         if(agent.x==simulator.startPosition.x && agent.y == simulator.startPosition.y && foodLeft.isEmpty())
-            return 10d;
+            return 1d;
         return 0;
     }
 
@@ -81,6 +81,7 @@ public class FlatlandQLearning extends QLearning {
             return new FlatlandAction(Direction.getRandom());
 
         List<Direction> actions = getBestAction(agent.x, agent.y, getStateFood());
+
 
         return new FlatlandAction(actions.get(random.nextInt(actions.size())));
     }
@@ -112,6 +113,8 @@ public class FlatlandQLearning extends QLearning {
                 bestValue = actions.get(d);
             }
         }
+        if(bestActions.isEmpty())
+            System.out.println();
         return bestActions;
     }
 
@@ -129,6 +132,8 @@ public class FlatlandQLearning extends QLearning {
         for (int i = 0; i < simulator.food.size(); i++) {
             foodLeft.add(simulator.food.get(i));
         }
+        steps.clear();
+        eligibilities.clear();
     }
 
     public ArrayList<Integer> getStateFood(){
@@ -157,4 +162,5 @@ public class FlatlandQLearning extends QLearning {
         }
         return policies;
     }
+
 }

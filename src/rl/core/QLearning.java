@@ -4,10 +4,7 @@ package rl.core;
 import rl.problems.flatland.FlatlandAction;
 import utils.Direction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by espen on 05/05/15.
@@ -16,67 +13,139 @@ public abstract class QLearning {
 
 
     protected Map<State,Map<Action,Double>> qValues = new HashMap<>();
+    protected Map<State,Map<Action,Double>> eligibilities = new HashMap<>();
     protected Random random = new Random();
     protected State initialState;
+    //protected List<Step> steps = new ArrayList<>();
+    protected Set<Step> steps = new HashSet<>();
 
     protected abstract void init();
 
-    public void runLearning(long k){
-        //TODO state does not seem to change when food is eaten
-
-        for (int i = 0; i < k; i++) {
+    public long runLearning(long k){
+        for (long i = 0; i < k; i++) {
             if(i % (k/10) == 0) {
                 System.out.println(Math.ceil(i / (double) k * 100) + "%");
             }
             resetScenario();
-            State prevState = initialState;
+            //State prevState = initialState;
             while(!isFinished()){
-                Action action = selectAction();
+                step();
+                /*Action action = selectAction();
                 performAction(action);
+                updateEligibility(prevState,action);
                 State state = getState();
+                steps.add(0,new Step(prevState,action));
                 double reward = getReward();
-                updateQValues(state,prevState,action,reward);
+                for (int j = 0; j < steps.size(); j++) {
+                    Step step = steps.get(j);
+                    State futureState;
+                    if(j == 0)
+                        futureState = state;
+                    else
+                        futureState = steps.get(j-1).state;
+                    updateQValues(futureState,step.state,step.action,reward);
+                }
+                //updateQValues(state,prevState,action,reward);
                 prevState = state;
-
+                if(reward != 0) {
+                    steps.clear();
+                    eligibilities.clear();
+                }*/
                 if(Settings.SIMULATED_ANNEALING)
                     deIncrementExplorationRate(i);
             }
+            if(!utils.Settings.ea.RUNNING)
+                return i;
         }
+        return k;
     }
 
-    private void deIncrementExplorationRate(int i) {
+    private void updateEligibility(State state,Action action) {
+        if(!eligibilities.containsKey(state)) {
+            eligibilities.put(state, new HashMap<>());
+            eligibilities.get(state).put(action,0d);
+        }else if(!eligibilities.get(state).containsKey(action)){
+            eligibilities.get(state).put(action,0d);
+        }
+
+        double oldValue = eligibilities.get(state).get(action);
+        eligibilities.get(state).put(action, oldValue+1);
+    }
+
+    private void deIncrementExplorationRate(long i) {
         Settings.EXPLORE_RATE = 1d-(i/(double)Settings.REPETITIONS);
     }
 
     public void step(){
-        State prevState = getState();
         Action action = selectAction();
+        step(action);
+    }
+
+    public void step(Action action) {
+        State prevState = getState();
+        steps.add(new Step(prevState,action));
         performAction(action);
-        State state = getState();
+        State newState = getState();
+        updateEligibility(prevState,action);
         double reward = getReward();
-        updateQValues(state, prevState, action,reward);
+        updateQValues(newState,prevState,action,reward);//;if(true)return;
+        /*for (int j = 0; j < steps.size(); j++) {
+            Step step = steps.get(j);
+            State futureState;
+            if(j == 0)
+                futureState = newState;
+            else
+                futureState = steps.get(j-1).state;
+            updateQValues(futureState,step.state,step.action,reward);
+        }*/
+        /*if(reward != 0) {
+            steps.clear();
+            eligibilities.clear();
+        }*/
     }
 
     protected abstract boolean isFinished();
 
-    protected double getQValue(State flatlandState, Action flatlandAction) {
-        if(qValues.containsKey(flatlandState))
-            if(qValues.get(flatlandState).containsKey(flatlandAction))
-                return qValues.get(flatlandState).get(flatlandAction);
+    protected double getQValue(State state, Action action) {
+        if(qValues.containsKey(state))
+            if(qValues.get(state).containsKey(action))
+                return qValues.get(state).get(action);
         return 0;
     }
 
     protected void updateQValues(State state, State prevState, Action action, double reward) {
-        double oldQ = getQValue(prevState,action);
+        double oldQ = getQValue(prevState, action);
+        //System.out.print(state);
+        //System.out.println(": " +oldQ);
         double maxValue = getMaxValue(state);
 
-        double newQ = oldQ + Settings.LEARNING_RATE * (reward + Settings.DISCOUNT_RATE*maxValue - oldQ);
+        double delta = reward + (Settings.DISCOUNT_RATE*maxValue) - oldQ;
+
+        //double newQ = oldQ + Settings.LEARNING_RATE * delta*eligibilities.get(prevState).get(action);
 
 
-        if(!qValues.containsKey(prevState))
+        /*if(!qValues.containsKey(prevState))
             qValues.put(prevState,new HashMap<>());
-        //if(!qValues.get(state).containsKey(action))
         qValues.get(prevState).put(action,newQ);
+        //if(true)return;
+        double oldValue = eligibilities.get(prevState).get(action);
+        eligibilities.get(prevState).put(action,oldValue*Settings.DISCOUNT_RATE*Settings.TRACE_DECAY_FACTOR);*/
+
+        for (Step step : steps){
+            double eligibility = eligibilities.get(step.state).get(step.action);
+            double newQ = getQValue(step.state,step.action) + (Settings.LEARNING_RATE*delta*eligibility);
+
+            if(!qValues.containsKey(step.state))
+                qValues.put(step.state,new HashMap<>());
+            qValues.get(step.state).put(step.action,newQ);
+
+            eligibilities.get(step.state).put(step.action, Settings.DISCOUNT_RATE*Settings.TRACE_DECAY_FACTOR*eligibility);
+            if(Double.isNaN(qValues.get(step.state).get(step.action)))
+                System.out.println();
+        }
+
+
+
 
     }
     public double getMaxValue(State state){
@@ -104,5 +173,6 @@ public abstract class QLearning {
     protected abstract Action selectAction();
 
     protected abstract void resetScenario();
+
 
 }

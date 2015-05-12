@@ -1,6 +1,10 @@
 package rl.gui;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import utils.Direction;
 import utils.Settings;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -27,7 +31,8 @@ import java.io.File;
 public class Controller {
 
 
-
+    @FXML
+    private GridPane window;
     @FXML
     private Button startButton;
     @FXML
@@ -52,6 +57,10 @@ public class Controller {
     private TextField discountRate;
     @FXML
     private TextField learningRate;
+    @FXML
+    private TextField traceDecayFactor;
+    @FXML
+    private TextField tdx;
 
 
     private boolean flatlandView = false;
@@ -59,9 +68,31 @@ public class Controller {
     FlatlandSimulator sim;
     public int[] lastPos = new int[]{-1,-1};
     private File scenario;
+    private String[][] oldBoard = null;
+    private boolean initialised = false;
 
     @FXML
     protected void initialize() {
+
+        window.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(initialised){
+                    if(event.getCode().equals(KeyCode.W)){
+                        sim.step(Direction.NORTH);
+                    }
+                    else if(event.getCode().equals(KeyCode.S)){
+                        sim.step(Direction.SOUTH);
+                    }
+                    else if(event.getCode().equals(KeyCode.D)){
+                        sim.step(Direction.EAST);
+                    }
+                    else if(event.getCode().equals(KeyCode.A)){
+                        sim.step(Direction.WEST);
+                    }
+                }
+            }
+        });
 
         loopDelaySlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -72,6 +103,8 @@ public class Controller {
                 Settings.ea.LOOP_DELAY = newValue.intValue();
             }
         });
+
+
 
         imageViews = new ImageView[10][10];
 
@@ -111,7 +144,9 @@ public class Controller {
             @Override
             protected Void call()  {
                 try{
+                    Settings.ea.RUNNING = true;
                     sim.train();
+                    Settings.ea.RUNNING = false;
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -133,6 +168,7 @@ public class Controller {
                 try{
                     Settings.ea.RUNNING = true;
                     sim.test();
+                    Settings.ea.RUNNING = false;
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -200,7 +236,6 @@ public class Controller {
     }
     public void updateGrid(String[][] boardData) {
         Platform.runLater(() -> {
-
             for (int i = 0; i < boardData.length; i++) {
                 for (int j = 0; j < boardData[0].length; j++) {
                     if(boardData[i][j] == "Filled")
@@ -214,6 +249,17 @@ public class Controller {
         });
     }
 
+    private void clearGrid() {
+        if(oldBoard == null)
+            return;
+        for (int i = 0; i < oldBoard.length; i++) {
+            for (int j = 0; j < oldBoard[0].length; j++) {
+                if(oldBoard[i][j] != "")
+                    imageViews[i][j].setImage(new Image("resources/Empty.png"));
+            }
+        }
+    }
+
 
     private void saveSettings() {
 
@@ -221,6 +267,8 @@ public class Controller {
         Settings.rl.EXPLORE_RATE = Double.parseDouble(exploreRate.getText());
         Settings.rl.LEARNING_RATE = Double.parseDouble(learningRate.getText());
         Settings.rl.DISCOUNT_RATE = Double.parseDouble(discountRate.getText());
+        Settings.rl.TRACE_DECAY_FACTOR = Double.parseDouble(traceDecayFactor.getText());
+        Settings.rl.TDX = Integer.parseInt(tdx.getText());
         if(Settings.rl.EXPLORE_RATE == -1d) {
             Settings.rl.SIMULATED_ANNEALING = true;
             Settings.rl.EXPLORE_RATE = 1d;
@@ -270,6 +318,7 @@ public class Controller {
         testButton.setDisable(false);
         stepButton.setDisable(false);
         resetButton.setDisable(false);
+        initialised = true;
     }
 
 

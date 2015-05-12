@@ -2,6 +2,7 @@ package rl.problems.flatland;
 
 import rl.gui.Controller;
 import sun.text.normalizer.NormalizerBase;
+import utils.Direction;
 import utils.Settings;
 
 import java.io.*;
@@ -65,9 +66,9 @@ public class FlatlandSimulator {
 
     public void train() {
         System.out.println("Training...");
-        qLearning.runLearning(Settings.rl.REPETITIONS);
+        long reps = qLearning.runLearning(Settings.rl.REPETITIONS);
         System.out.println("Finished training");
-        trainingCount += Settings.rl.REPETITIONS;
+        trainingCount += reps;
     }
 
     public void test() {
@@ -79,6 +80,7 @@ public class FlatlandSimulator {
         gui.updateGrid(qLearning.getScenarioPolicy());
 
         int stepCount = 0;
+        int foodCount = 0;
         while(!qLearning.isFinished() && Settings.ea.RUNNING){
             try {
                 Thread.sleep(Settings.ea.LOOP_DELAY);
@@ -89,8 +91,12 @@ public class FlatlandSimulator {
             qLearning.step();
             stepCount++;
             System.out.println(qLearning.getActions());
-            gui.updateGrid(qLearning.agent,qLearning.getScenarioPolicy());
-            gui.updateGrid(qLearning.getScenarioPolicy());
+            String[][] policy = qLearning.getScenarioPolicy();
+            gui.updateGrid(qLearning.agent,policy);
+            if(foodCount != qLearning.agent.foodCount) {
+                gui.updateGrid(policy);
+                foodCount = qLearning.agent.foodCount;
+            }
         }
 
         System.out.println("Tested: " + scenarioName);
@@ -108,6 +114,19 @@ public class FlatlandSimulator {
     }
     public void step(){
         qLearning.step();
+        System.out.println(qLearning.getActions());
+        System.out.println(qLearning.getStateFood());
+        /*for (int i = 0; i < qLearning.getScenarioPolicy().length; i++) {
+            System.out.println(Arrays.toString(qLearning.getScenarioPolicy()[i]));
+        }*/
+        gui.updateGrid(qLearning.agent,qLearning.getScenarioPolicy());
+        gui.updateGrid(qLearning.getScenarioPolicy());
+    }
+
+    public void step(Direction direction) {
+        qLearning.step(new FlatlandAction(direction));
+        if(qLearning.isFinished())
+            qLearning.resetScenario();
         System.out.println(qLearning.getActions());
         System.out.println(qLearning.getStateFood());
         /*for (int i = 0; i < qLearning.getScenarioPolicy().length; i++) {
