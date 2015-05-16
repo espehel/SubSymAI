@@ -6,6 +6,10 @@ import rl.core.Settings;
 import rl.core.State;
 import utils.Direction;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,15 +52,15 @@ public class FlatlandQLearning extends QLearning {
     protected double getReward() {
         if(cellContent==-1){
             agent.poisonCount++;
-            return -2d;
+            return -10d;
         }
         if(cellContent>0){
             agent.foodCount++;
-            return 1d;
+            return 10d;
         }
         if(agent.x==simulator.startPosition.x && agent.y == simulator.startPosition.y && foodLeft.isEmpty())
-            return 1d;
-        return 0;
+            return 10d;
+        return Settings.STEP_PENALTY;
     }
 
     @Override
@@ -132,7 +136,7 @@ public class FlatlandQLearning extends QLearning {
         for (int i = 0; i < simulator.food.size(); i++) {
             foodLeft.add(simulator.food.get(i));
         }
-        steps.clear();
+        SAPs.clear();
         eligibilities.clear();
     }
 

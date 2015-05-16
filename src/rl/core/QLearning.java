@@ -2,8 +2,10 @@ package rl.core;
 
 
 import rl.problems.flatland.FlatlandAction;
+import utils.Constants;
 import utils.Direction;
 
+import java.security.cert.Extension;
 import java.util.*;
 
 /**
@@ -16,8 +18,8 @@ public abstract class QLearning {
     protected Map<State,Map<Action,Double>> eligibilities = new HashMap<>();
     protected Random random = new Random();
     protected State initialState;
-    //protected List<Step> steps = new ArrayList<>();
-    protected Set<Step> steps = new HashSet<>();
+    protected List<Step> steps = new ArrayList<>();
+    protected Set<Step> SAPs = new HashSet<>();
 
     protected abstract void init();
 
@@ -27,33 +29,12 @@ public abstract class QLearning {
                 System.out.println(Math.ceil(i / (double) k * 100) + "%");
             }
             resetScenario();
-            //State prevState = initialState;
             while(!isFinished()){
                 step();
-                /*Action action = selectAction();
-                performAction(action);
-                updateEligibility(prevState,action);
-                State state = getState();
-                steps.add(0,new Step(prevState,action));
-                double reward = getReward();
-                for (int j = 0; j < steps.size(); j++) {
-                    Step step = steps.get(j);
-                    State futureState;
-                    if(j == 0)
-                        futureState = state;
-                    else
-                        futureState = steps.get(j-1).state;
-                    updateQValues(futureState,step.state,step.action,reward);
-                }
-                //updateQValues(state,prevState,action,reward);
-                prevState = state;
-                if(reward != 0) {
-                    steps.clear();
-                    eligibilities.clear();
-                }*/
                 if(Settings.SIMULATED_ANNEALING)
                     deIncrementExplorationRate(i);
             }
+            //noinspection AccessStaticViaInstance
             if(!utils.Settings.ea.RUNNING)
                 return i;
         }
@@ -83,25 +64,35 @@ public abstract class QLearning {
 
     public void step(Action action) {
         State prevState = getState();
-        steps.add(new Step(prevState,action));
         performAction(action);
         State newState = getState();
-        updateEligibility(prevState,action);
+        updateEligibility(prevState, action);
         double reward = getReward();
-        updateQValues(newState,prevState,action,reward);//;if(true)return;
-        /*for (int j = 0; j < steps.size(); j++) {
-            Step step = steps.get(j);
-            State futureState;
-            if(j == 0)
-                futureState = newState;
-            else
-                futureState = steps.get(j-1).state;
-            updateQValues(futureState,step.state,step.action,reward);
-        }*/
-        /*if(reward != 0) {
-            steps.clear();
-            eligibilities.clear();
-        }*/
+        if(Settings.EXTENSION == Constants.EXTENSION_ET) {
+            SAPs.add(new Step(prevState, action));
+            updateQTraces(newState, prevState, action, reward);
+        }
+        else {
+            updateQValues(newState, prevState, action, reward);
+        }
+
+        if(Settings.EXTENSION == Constants.EXTENSION_TDX) {
+            steps.add(0, new Step(prevState, action));
+            if (steps.size() > Settings.TDX)
+                steps.remove(steps.size() - 1);
+            for (int j = 1; j < steps.size(); j++) {
+                Step step = steps.get(j);
+                State futureState = steps.get(j - 1).state;
+                updateQValues(futureState, step.state, step.action, 0);
+            }
+        }
+        if(Settings.EXTENSION != Constants.EXTENSION_NONE) {
+            if (reward != Settings.STEP_PENALTY) {
+                //SAPs.clear();
+                //eligibilities.clear();
+                steps.clear();
+            }
+        }
     }
 
     protected abstract boolean isFinished();
@@ -113,7 +104,19 @@ public abstract class QLearning {
         return 0;
     }
 
-    protected void updateQValues(State state, State prevState, Action action, double reward) {
+    protected void updateQValues(State state, State prevState, Action action, double reward){
+        double oldQ = getQValue(prevState, action);
+        double maxValue = getMaxValue(state);
+        double delta = reward + (Settings.DISCOUNT_RATE*maxValue) - oldQ;
+        double newQ = oldQ + Settings.LEARNING_RATE * delta;
+
+        if(!qValues.containsKey(prevState))
+            qValues.put(prevState,new HashMap<>());
+        qValues.get(prevState).put(action,newQ);
+
+    }
+
+    protected void updateQTraces(State state, State prevState, Action action, double reward) {
         double oldQ = getQValue(prevState, action);
         //System.out.print(state);
         //System.out.println(": " +oldQ);
@@ -131,7 +134,8 @@ public abstract class QLearning {
         double oldValue = eligibilities.get(prevState).get(action);
         eligibilities.get(prevState).put(action,oldValue*Settings.DISCOUNT_RATE*Settings.TRACE_DECAY_FACTOR);*/
 
-        for (Step step : steps){
+        //TD(eligibility)
+        for (Step step : SAPs){
             double eligibility = eligibilities.get(step.state).get(step.action);
             double newQ = getQValue(step.state,step.action) + (Settings.LEARNING_RATE*delta*eligibility);
 

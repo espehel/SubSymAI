@@ -90,7 +90,7 @@ public class FlatlandSimulator {
 
             qLearning.step();
             stepCount++;
-            System.out.println(qLearning.getActions());
+            //System.out.println(qLearning.getActions());
             String[][] policy = qLearning.getScenarioPolicy();
             gui.updateGrid(qLearning.agent,policy);
             if(foodCount != qLearning.agent.foodCount) {

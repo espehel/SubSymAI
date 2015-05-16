@@ -26,5 +26,8 @@ public class Constants {
     public static final int SCENARIO_WRAP = 1;
     public static final int SCENARIO_NO_WRAP = 2;
     public static final int SCENARIO_POLL_W_WRAP = 3;
+    public static final int EXTENSION_NONE = 0;
+    public static final int EXTENSION_TDX = 1;
+    public static final int EXTENSION_ET = 2;
 
 }

@@ -1,6 +1,7 @@
 package rl.core;
 
 import com.sun.org.apache.xpath.internal.functions.FuncFalse;
+import utils.Constants;
 
 /**
  * Created by espen on 07/05/15.
@@ -13,4 +14,6 @@ public class Settings {
     public static long REPETITIONS = 1000;
     public static boolean SIMULATED_ANNEALING = false;
     public static double TRACE_DECAY_FACTOR = 0.9;
+    public static int EXTENSION = Constants.EXTENSION_TDX;
+    public static double STEP_PENALTY = -1d;
 }
